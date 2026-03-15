@@ -55,6 +55,7 @@ const CategorySwitcher = ({
       style={{
         backgroundColor: 'var(--bg-primary)',
         borderBottom: '1px solid var(--border-color)',
+        boxShadow: '0 2px 10px var(--shadow-color)',
         transition: 'background-color 0.3s ease',
       }}
     >
@@ -63,25 +64,43 @@ const CategorySwitcher = ({
           ref={scrollRef}
           className="no-scrollbar flex items-center gap-2 overflow-x-auto py-3 sm:gap-3 sm:py-4"
         >
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              data-category-id={category.id}
-              onClick={() => onCategoryClick(category.id)}
-              className={`category-chip ${
-                activeCategory === category.id ? 'active' : ''
-              }`}
-            >
-              {category.image_url && (
-                <img
-                  src={category.image_url}
-                  alt={category.name}
-                  className="mr-1.5 inline-block h-5 w-5 rounded-full object-cover"
-                />
-              )}
-              {category.name}
-            </button>
-          ))}
+          {categories.map((category) => {
+            const isActive = activeCategory === category.id;
+
+            return (
+              <button
+                key={category.id}
+                data-category-id={category.id}
+                onClick={() => onCategoryClick(category.id)}
+                className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 sm:px-5 sm:py-2.5 ${
+                  isActive
+                    ? 'bg-primary-600 text-white shadow-md scale-105'
+                    : ''
+                }`}
+                style={
+                  !isActive
+                    ? {
+                        backgroundColor: 'var(--bg-secondary)',
+                        color: 'var(--text-secondary)',
+                        border: '1px solid var(--border-color)',
+                      }
+                    : {}
+                }
+              >
+                {/* Small category icon/image */}
+                {category.image_url && (
+                  <div className="h-5 w-5 flex-shrink-0 overflow-hidden rounded-full sm:h-6 sm:w-6">
+                    <img
+                      src={category.image_url}
+                      alt={category.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                )}
+                <span>{category.name}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

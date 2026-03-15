@@ -142,13 +142,14 @@ const MenuSection = () => {
       />
 
       {/* Category Sections */}
-      {categories.map((category) => {
+           {categories.map((category) => {
         const categoryProducts = getProductsByCategory(category.id);
         return (
           <CategorySection
             key={category.id}
             categoryId={category.id}
             categoryName={category.name}
+            categoryImage={category.image_url}
             products={categoryProducts}
             onProductClick={handleProductClick}
           />
