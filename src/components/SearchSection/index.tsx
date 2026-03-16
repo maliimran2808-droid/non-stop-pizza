@@ -106,22 +106,14 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
     <section ref={sectionRef} className="relative z-30 opacity-0">
       <div className="container-custom py-6 sm:py-8">
         {/* Section Title */}
-        <div className="mb-4 text-center sm:mb-6">
-          <h2 className="text-xl font-bold sm:text-2xl" style={{ color: 'var(--text-primary)' }}>
-            What are you craving? 🍕
-          </h2>
-          <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Search for your favorite food items
-          </p>
-        </div>
+     
 
         {/* Search Box */}
-        <div ref={searchRef} className="relative mx-auto max-w-2xl" style={{ zIndex: 50 }}>
+        <div ref={searchRef} className="relative mx-auto max-w-[80vw]" style={{ zIndex: 50 }}>
           <div
             className="relative flex items-center overflow-hidden rounded-full shadow-lg transition-all duration-300"
             style={{
               backgroundColor: 'var(--bg-card)',
-              border: '2px solid var(--border-color)',
             }}
           >
             {/* Search Icon */}
@@ -144,8 +136,8 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
               onFocus={() => {
                 if (results.length > 0) setShowResults(true);
               }}
-              className="w-full border-none bg-transparent px-4 py-4 text-sm outline-none sm:text-base"
-              style={{ color: 'var(--text-primary)' }}
+              className="w-full border-none px-2 py-4 outline-none searchInput"
+              style={{ fontFamily:'var(--font-poppins)', fontWeight:'400', color: 'var(--text-primary)', backgroundColor:'var(--bg-card)' }}
             />
 
             {/* Loading Spinner or Clear Button */}

@@ -89,7 +89,8 @@
 
 :root,
 .light {
-  --bg-primary: #ffffff;
+  --bg-white-primary: #fcfcfc;
+  --bg-primary: #f9f9f9;
   --bg-secondary: #f9f9f9;
   --bg-card: #ffffff;
   --text-primary: #1a1a1a;
@@ -102,11 +103,12 @@
 }
 
 .dark {
-  --bg-primary: #121212;
+  --bg-white-primary: #121212;
+  --bg-primary: #000000;
   --bg-secondary: #1e1e1e;
-  --bg-card: #1e1e1e;
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0a0;
+  --bg-card: #1a1818;
+  --text-primary: #fff;
+  --text-secondary: #fff;
   --border-color: #2e2e2e;
   --shadow-color: rgba(0, 0, 0, 0.3);
   --overlay-bg: rgba(0, 0, 0, 0.7);
@@ -455,4 +457,8 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+.searchInput::placeholder { /* Modern browsers (Chrome, Firefox, Opera, Safari, Edge) */
+  color: var(--text-primary);
+  opacity: 1; /* Firefox adds a lower opacity by default, this ensures full opacity */
 }
