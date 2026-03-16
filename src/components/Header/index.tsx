@@ -101,7 +101,7 @@ if (pathname.startsWith('/admin')) return null;
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2">
                 <div className="flex h-auto w-auto items-center justify-center">
-                  <img src={theme === 'dark' ? '/logo2.webp' : '/logo.webp'} style={{width: "12.3rem"}}/>
+                  <img src={theme === 'dark' ? '/logo2.webp' : '/Logo.webp'} style={{width: "12.3rem"}}/>
                   
                 </div>
                
