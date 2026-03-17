@@ -91,7 +91,7 @@ if (pathname.startsWith('/admin')) return null;
   }}
 > 
 <div className='bg-header_top w-full h-auto p-0 m-0'>
-  <img src="/header.png" alt="header" className='w-full' style={{transform:"translateY(-5px)"}}/>
+  <img src="/header.png" alt="header" className='w-full'/>
   
 </div>
         <div className="container-custom" style={{padding: "0px 3rem"}}>
@@ -100,8 +100,8 @@ if (pathname.startsWith('/admin')) return null;
             <div className="flex items-end gap-4">
               {/* Logo */}
               <Link href="/" className="flex items-center gap-2">
-                <div className="flex h-auto w-auto items-center justify-center">
-                  <img src={theme === 'dark' ? '/logo2.webp' : '/Logo.webp'} style={{width: "12.3rem"}}/>
+                <div className="flex h-auto logo-img w-auto items-center justify-center">
+                  <img src={theme === 'dark' ? '/logo2.webp' : '/Logo.webp'}/>
                   
                 </div>
                
@@ -140,7 +140,7 @@ if (pathname.startsWith('/admin')) return null;
                 className="relative flex h-auto w-10 items-center justify-center text-white transition-all duration-300"
                 aria-label="Cart"
               >
-                <img src="/Cart.svg" alt="" className='w-70'/>
+                <img src="/Cart.svg" alt="" className='cart-btn'/>
                 {totalItems > 0 && (
                   <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-400 text-[10px] font-bold text-black">
                     {totalItems}
@@ -193,7 +193,7 @@ if (pathname.startsWith('/admin')) return null;
               <span className="text-lg font-bold text-primary-600">Menu</span>
               <button
                 onClick={toggleMobileMenu}
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-all hover:bg-primary-100"
+                className="flex h-auto w-9 items-center justify-center rounded-full transition-all hover:bg-primary-100"
                 style={{ color: 'var(--text-primary)' }}
               >
                 <FiX size={22} />
