@@ -224,15 +224,15 @@ const BottomCartBar = () => {
           }}
           onClick={openSidebar}
         >
-          <div className="flex items-center gap-[6rem] justify-between"
+          <div className="flex  items-center btm-crt-bar justify-between"
           style={{fontFamily:'Salmond', padding:'15px 5px'}}>
             {/* Left — Items Count */}
-            <div className="flex relative rounded-full items-center gap-2"
+            <div className="flex relative cart-btm-txt rounded-full items-center gap-2"
             style={{fontSize:'1.1rem', border:'2px solid white', padding:'14px'}}
             >
              
               <span className="font-bold text-white p-0"
-              style={{padding:'0px', position:'absolute', left:'50%', top:'58%', transform:'translate(-50%, -50%)'}}
+              style={{padding:'0px', position:'absolute', left:'48%', top:'58%', transform:'translate(-50%, -50%)'}}
               >
                 {totalItems} 
               </span>

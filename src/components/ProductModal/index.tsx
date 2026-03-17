@@ -199,9 +199,9 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
       {/* Modal */}
            <div
         ref={modalRef}
-        className="relative z-10 w-full overflow-hidden rounded-3xl shadow-2xl sm:max-w-2xl lg:max-w-3xl"
+        className="relative z-10 w-full overflow-hidden rounded-3xl shadow-2xl sm:max-w-2xl lg:max-w-6xl"
         style={{
-          backgroundColor: 'var(--bg-primary)',
+          backgroundColor: 'var(--product-model)',
           maxHeight: '90vh',
         }}
       >
@@ -217,11 +217,12 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
               {/* Main Content — Image Left + Details Right */}
         <div className="flex max-h-[90vh] flex-col sm:flex-row">
                    {/* LEFT — Product Image */}
-          <div className="relative h-44 w-full flex-shrink-0 overflow-hidden sm:h-auto sm:w-1/2">    {product.image_url ? (
+          <div className="relative h-auto w-full flex-shrink-0 overflow-hidden sm:h-auto sm:w-1/2">   
+           {product.image_url ? (
               <img
                 src={product.image_url}
                 alt={product.name}
-                className="h-auto w-100 mx-auto object-contain"
+                className="h-auto w-100 mx-auto lg:w-full object-contain"
               />
             ) : (
               <div className="flex h-full min-h-[250px] w-full items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700">
@@ -233,7 +234,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
 
             {!product.is_in_stock && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <span className="rounded-full bg-red-600 px-4 py-2 text-sm font-bold text-white">
+                <span className="rounded-full bg-red-600 px-4 py-2 text-sm font-bold text-white" style={{fontFamily:'Salmond'}}>
                   Out of Stock
                 </span>
               </div>
@@ -241,10 +242,11 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
           </div>
 
            {/* RIGHT — Product Details */}
-          <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex flex-1 flex-col overflow-hidden" >
             {/* Scrollable Content */}
             <div
-              className="flex-1 overflow-y-auto p-4 sm:p-6"
+              className="flex-1 sm:max-h-30vh overflow-y-auto p-4 sm:p-6"
+              style={{borderLeft:"1px solid", borderBottom:'1px solid', borderLeftColor:"var(--border-color)", borderBottomColor:'var(--border-color)'}}
             >
                {/* Name */}
               <h2
@@ -385,7 +387,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
 
             {/* Bottom Bar — Quantity + Add to Cart (Fixed at bottom) */}
               <div
-              className="flex flex-shrink-0 items-center justify-between gap-3 border-t p-3 sm:gap-4 sm:p-5"
+              className="flex flex-shrink-0 items-center justify-between gap-3 p-3 sm:gap-4 sm:p-5"
               style={{ borderColor: 'grey' }}
             >
               {/* Quantity Counter — Left */}
@@ -421,7 +423,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                 onClick={handleAddToCart}
                 disabled={!product.is_in_stock}
                 style={{borderRadius:'5px', fontFamily:'Salmond', fontSize:'1.2rem', padding:'0px'}}
-                className="btn-primary flex flex-1 items-center justify-between gap-2  text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
+                className="btn-primary crt-sze_txt flex flex-1 items-center justify-between gap-2  text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
               >
                 <span className='flex item-center justify-center pt-3 px-5 pb-1.5'>
                   Rs. {totalPrice.toLocaleString()}

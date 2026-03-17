@@ -524,6 +524,12 @@ body {
     font-size: 11px !important;
   }
 }
+.btm-crt-bar{
+  gap: 6rem;
+}
+.cart-btm-txt{
+  font-size: 1rem;
+}
 @media screen and (max-width: 650px) {
     .add-btn-small{
     font-size: .9rem !important;
@@ -553,4 +559,15 @@ body {
     font-size: 12px !important;
   }
  
+  
+.btm-crt-bar{
+  gap: 1.5rem !important;
+}
+.cart-btm-txt{
+  font-size: .9rem !important;
+}
+}
+
+.crt-sze_txt{
+  font-size: 16px !important;
 }
