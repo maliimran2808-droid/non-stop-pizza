@@ -188,22 +188,21 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   const totalPrice = calculatePrice() * quantity;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       {/* Overlay */}
       <div
         ref={overlayRef}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={handleClose}
       />
-
+ 
       {/* Modal */}
-      <div
+           <div
         ref={modalRef}
-        className="relative z-10 w-full overflow-auto rounded-3xl shadow-2xl sm:max-w-[90%] lg:max-w-[85vw]"
+        className="relative z-10 w-full overflow-hidden rounded-3xl shadow-2xl sm:max-w-2xl lg:max-w-3xl"
         style={{
-          backgroundColor: 'var(--product-model)',
-          border:'1px solid grey',
-          maxHeight:'85vh'
+          backgroundColor: 'var(--bg-primary)',
+          maxHeight: '90vh',
         }}
       >
         {/* Close Button */}
@@ -215,10 +214,10 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
         </button>
 
         {/* Main Content — Image Left + Details Right */}
-        <div className="flex flex-col sm:flex-row">
-          {/* LEFT — Product Image */}
-          <div className="relative h-auto w-full flex-shrink-0 p-4 overflow-hidden sm:h-auto sm:w-1/3">
-            {product.image_url ? (
+              {/* Main Content — Image Left + Details Right */}
+        <div className="flex max-h-[90vh] flex-col sm:flex-row">
+                   {/* LEFT — Product Image */}
+          <div className="relative h-44 w-full flex-shrink-0 overflow-hidden sm:h-auto sm:w-1/2">    {product.image_url ? (
               <img
                 src={product.image_url}
                 alt={product.name}
@@ -241,15 +240,11 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
             )}
           </div>
 
-          {/* RIGHT — Product Details */}
-          <div className="flex flex-1 flex-col">
-           
-
+           {/* RIGHT — Product Details */}
+          <div className="flex flex-1 flex-col overflow-hidden">
             {/* Scrollable Content */}
             <div
-              className="flex-1 overflow-y-auto p-5 sm:p-6"
-              style={{ maxHeight: '55vh', borderLeft:'1px solid grey' }}
-
+              className="flex-1 overflow-y-auto p-4 sm:p-6"
             >
                {/* Name */}
               <h2
@@ -389,8 +384,8 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
             </div>
 
             {/* Bottom Bar — Quantity + Add to Cart (Fixed at bottom) */}
-            <div
-              className="flex items-center justify-between gap-4 border-t p-4 sm:p-5"
+              <div
+              className="flex flex-shrink-0 items-center justify-between gap-3 border-t p-3 sm:gap-4 sm:p-5"
               style={{ borderColor: 'grey' }}
             >
               {/* Quantity Counter — Left */}
