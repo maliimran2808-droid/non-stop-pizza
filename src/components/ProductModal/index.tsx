@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Product, ProductVariant } from '@/types';
+import { Product, ProductVariant, DealOption, DealOptionItem } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { supabase } from '@/lib/supabase-client';
 import gsap from 'gsap';
@@ -14,11 +14,16 @@ interface ProductModalProps {
   onClose: () => void;
 }
 
+interface SelectedDealOptions {
+  [groupId: string]: DealOptionItem;
+}
+
 const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [specialInstructions, setSpecialInstructions] = useState('');
-  const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const [dealOptions, setDealOptions] = useState<DealOption[]>([]);
+  const [selectedDealOptions, setSelectedDealOptions] = useState<SelectedDealOptions>({});
   const modalRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useCartStore();
@@ -29,7 +34,6 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
       const defaultVariant = product.variants.find((v) => v.is_default) || product.variants[0];
       setSelectedVariant(defaultVariant);
     } else if (product) {
-      // Create a default variant from base price
       setSelectedVariant({
         id: 'default',
         product_id: product.id,
@@ -41,41 +45,43 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     }
     setQuantity(1);
     setSpecialInstructions('');
+    setSelectedDealOptions({});
   }, [product]);
 
-  // Fetch suggestions
+  // Fetch deal options if product is a deal
   useEffect(() => {
-    if (!product) return;
+    if (!product || product.product_type !== 'deal') {
+      setDealOptions([]);
+      return;
+    }
 
-    const fetchSuggestions = async () => {
+    const fetchDealOptions = async () => {
       try {
         const { data } = await supabase
-          .from('products')
-          .select('*, variants:product_variants(*)')
-          .eq('is_active', true)
-          .neq('id', product.id)
-          .eq('category_id', product.category_id)
-          .limit(4);
+          .from('deal_options')
+          .select('*, items:deal_option_items(*)')
+          .eq('product_id', product.id)
+          .order('display_order', { ascending: true });
 
-        if (data && data.length > 0) {
-          setSuggestions(data);
-        } else {
-          // If no same-category products, get random ones
-          const { data: randomData } = await supabase
-            .from('products')
-            .select('*, variants:product_variants(*)')
-            .eq('is_active', true)
-            .neq('id', product.id)
-            .limit(4);
+        if (data) {
+          setDealOptions(data);
 
-          if (randomData) setSuggestions(randomData);
+          // Set defaults
+          const defaults: SelectedDealOptions = {};
+          data.forEach((group) => {
+            if (group.items && group.items.length > 0) {
+              const defaultItem = group.items.find((i: DealOptionItem) => i.is_default) || group.items[0];
+              defaults[group.id] = defaultItem;
+            }
+          });
+          setSelectedDealOptions(defaults);
         }
       } catch (err) {
-        console.error('Error fetching suggestions:', err);
+        console.error('Error fetching deal options:', err);
       }
     };
 
-    fetchSuggestions();
+    fetchDealOptions();
   }, [product]);
 
   // Animate open
@@ -122,40 +128,67 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     }
   };
 
+  // Calculate total price
+  const calculatePrice = () => {
+    let price = selectedVariant?.price || product?.base_price || 0;
+
+    // Add deal option price adjustments
+    Object.values(selectedDealOptions).forEach((item) => {
+      price += Number(item.price_adjustment || 0);
+    });
+
+    return price;
+  };
+
+  // Handle deal option selection
+  const handleDealOptionSelect = (groupId: string, item: DealOptionItem) => {
+    setSelectedDealOptions((prev) => ({
+      ...prev,
+      [groupId]: item,
+    }));
+  };
+
   // Handle add to cart
   const handleAddToCart = () => {
     if (!product || !selectedVariant) return;
 
-    addToCart(product, selectedVariant, quantity, specialInstructions);
+    // Build special instructions with deal options
+    let instructions = specialInstructions;
+    if (Object.keys(selectedDealOptions).length > 0) {
+      const dealChoices = dealOptions
+        .map((group) => {
+          const selected = selectedDealOptions[group.id];
+          return selected ? `${group.group_name}: ${selected.name}` : '';
+        })
+        .filter(Boolean)
+        .join(' | ');
+
+      if (dealChoices) {
+        instructions = instructions
+          ? `${dealChoices} || ${instructions}`
+          : dealChoices;
+      }
+    }
+
+    // Create a modified variant with calculated price
+    const finalVariant = {
+      ...selectedVariant,
+      price: calculatePrice(),
+    };
+
+    addToCart(product, finalVariant, quantity, instructions);
     toast.success(`${product.name} added to cart! 🍕`, {
       icon: '🛒',
     });
     handleClose();
   };
 
-  // Handle suggestion click
-  const handleSuggestionAdd = (sugProduct: Product) => {
-    const defaultVariant =
-      sugProduct.variants?.find((v) => v.is_default) ||
-      sugProduct.variants?.[0] || {
-        id: 'default',
-        product_id: sugProduct.id,
-        name: 'Regular',
-        price: sugProduct.base_price,
-        is_default: true,
-        created_at: '',
-      };
-
-    addToCart(sugProduct, defaultVariant, 1, '');
-    toast.success(`${sugProduct.name} added to cart!`, {
-      icon: '✅',
-    });
-  };
-
   if (!isOpen || !product) return null;
 
+  const totalPrice = calculatePrice() * quantity;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Overlay */}
       <div
         ref={overlayRef}
@@ -166,217 +199,243 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative z-10 max-h-[90vh] w-full overflow-y-auto rounded-t-3xl shadow-2xl sm:max-w-lg sm:rounded-3xl"
-        style={{ backgroundColor: 'var(--bg-primary)' }}
+        className="relative z-10 w-full overflow-hidden rounded-3xl shadow-2xl sm:max-w-[90%] lg:max-w-[85vw]"
+        style={{
+          backgroundColor: 'var(--product-model)',
+          border:'1px solid grey',
+        }}
       >
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white transition-all hover:bg-black/60"
+          className="absolute text-white right-4 top-4 z-20 flex h-9 w-9 items-center cursor-pointer justify-center rounded-full bg-primary-600 text-white transition-all"
         >
           <FiX size={18} />
         </button>
 
-        {/* Product Image */}
-        <div className="relative h-52 w-full overflow-hidden rounded-t-3xl sm:h-64 sm:rounded-t-3xl">
-          {product.image_url ? (
-            <img
-              src={product.image_url}
-              alt={product.name}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700">
-              <span className="text-7xl">🍕</span>
-            </div>
-          )}
-
-          {product.is_new_arrival && (
-            <div className="absolute left-4 top-4 rounded-full bg-primary-600 px-3 py-1 text-xs font-bold uppercase text-white">
-              New
-            </div>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="p-5 sm:p-6">
-          {/* Name & Description */}
-          <h2
-            className="text-xl font-bold sm:text-2xl"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            {product.name}
-          </h2>
-          {product.description && (
-            <p
-              className="mt-1 text-sm"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              {product.description}
-            </p>
-          )}
-
-          {/* Variants */}
-          {product.variants && product.variants.length > 0 && (
-            <div className="mt-5">
-              <h3
-                className="mb-2 text-sm font-semibold"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Choose Size
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {product.variants.map((variant) => (
-                  <button
-                    key={variant.id}
-                    onClick={() => setSelectedVariant(variant)}
-                    className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-300 ${
-                      selectedVariant?.id === variant.id
-                        ? 'bg-primary-600 text-white shadow-md'
-                        : ''
-                    }`}
-                    style={
-                      selectedVariant?.id !== variant.id
-                        ? {
-                            backgroundColor: 'var(--input-bg)',
-                            color: 'var(--text-primary)',
-                            border: '1px solid var(--border-color)',
-                          }
-                        : {}
-                    }
-                  >
-                    <span>{variant.name}</span>
-                    <span className="ml-2 font-bold">Rs. {variant.price}</span>
-                  </button>
-                ))}
+        {/* Main Content — Image Left + Details Right */}
+        <div className="flex flex-col sm:flex-row">
+          {/* LEFT — Product Image */}
+          <div className="relative h-auto w-full flex-shrink-0 p-4 overflow-hidden sm:h-auto sm:w-1/3">
+            {product.image_url ? (
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="h-auto w-100 mx-auto object-contain"
+              />
+            ) : (
+              <div className="flex h-full min-h-[250px] w-full items-center justify-center bg-gradient-to-br from-primary-500 to-primary-700">
+                <span className="text-7xl">🍕</span>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Special Instructions */}
-          <div className="mt-5">
-            <h3
-              className="mb-2 text-sm font-semibold"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Special Instructions (Optional)
-            </h3>
-            <textarea
-              value={specialInstructions}
-              onChange={(e) => setSpecialInstructions(e.target.value)}
-              placeholder="E.g., Extra cheese, no onions, less spicy..."
-              rows={2}
-              className="input-field resize-none"
-            />
+        
+
+            {!product.is_in_stock && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <span className="rounded-full bg-red-600 px-4 py-2 text-sm font-bold text-white">
+                  Out of Stock
+                </span>
+              </div>
+            )}
           </div>
 
-          {/* Quantity */}
-          <div className="mt-5 flex items-center justify-between">
-            <h3
-              className="text-sm font-semibold"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Quantity
-            </h3>
+          {/* RIGHT — Product Details */}
+          <div className="flex flex-1 flex-col">
+           
+
+            {/* Scrollable Content */}
             <div
-              className="flex items-center gap-3 rounded-full px-2 py-1"
-              style={{
-                backgroundColor: 'var(--input-bg)',
-                border: '1px solid var(--border-color)',
-              }}
-            >
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="flex h-8 w-8 items-center justify-center rounded-full transition-all hover:bg-primary-100"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                <FiMinus size={16} />
-              </button>
-              <span
-                className="min-w-[24px] text-center text-base font-bold"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                {quantity}
-              </span>
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600 text-white transition-all hover:bg-primary-700"
-              >
-                <FiPlus size={16} />
-              </button>
-            </div>
-          </div>
+              className="flex-1 overflow-y-auto p-5 sm:p-6"
+              style={{ maxHeight: '55vh', borderLeft:'1px solid grey' }}
 
-          {/* Suggestions */}
-          {suggestions.length > 0 && (
-            <div className="mt-6">
-              <h3
-                className="mb-3 text-sm font-semibold"
-                style={{ color: 'var(--text-primary)' }}
+            >
+               {/* Name */}
+              <h2
+                className="text-xl font-bold sm:text-2xl"
+                style={{  fontFamily:'Salmond', color: 'var(--text-primary)'}}
               >
-                🍟 You might also like
-              </h3>
-              <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-                {suggestions.map((sug) => (
-                  <div
-                    key={sug.id}
-                    className="flex min-w-[140px] flex-shrink-0 flex-col overflow-hidden rounded-xl"
-                    style={{
-                      backgroundColor: 'var(--bg-card)',
-                      border: '1px solid var(--border-color)',
-                    }}
-                  >
-                    <div className="relative h-20 w-full overflow-hidden">
-                      {sug.image_url ? (
-                        <img
-                          src={sug.image_url}
-                          alt={sug.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
-                          <span className="text-2xl">🍕</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2">
-                      <p
-                        className="truncate text-xs font-semibold"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
-                        {sug.name}
-                      </p>
-                      <div className="mt-1 flex items-center justify-between">
-                        <span className="text-xs font-bold text-primary-600">
-                          Rs. {sug.base_price}
-                        </span>
+                {product.name}
+              </h2>
+             
+
+              {/* Price */}
+              <p className="mt-2 text-2xl font-extrabold" style={{fontFamily:'Salmond', fontSize:'1.3rem', color:'var(--text-primary)'}}>
+                Rs. {calculatePrice().toLocaleString()}
+              </p>
+ {/* Description */}
+              {product.description && (
+                <p
+                  className="mt-1 text-sm"
+                  style={{ color: 'var(--text-secondary)', fontFamily:'Poppins',maxWidth:'90%' }}
+                >
+                  {product.description}
+                </p>
+              )}
+              {/* Variants (for variant type products) */}
+              {product.product_type !== 'deal' &&
+                product.variants &&
+                product.variants.length > 0 && (
+                  <div className="mt-5">
+                    <h3
+                      className="mb-2 font-semibold"
+                      style={{ color: 'var(--text-primary)', fontFamily:'Salmond' }}
+                    >
+                      Choose your Option
+                    </h3>
+                    <div className="flex flex-wrap gap-2" style={{flexDirection:"column"}}>
+                      {product.variants.map((variant) => (
                         <button
-                          onClick={() => handleSuggestionAdd(sug)}
-                          className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-600 text-white transition-all hover:bg-primary-700"
+                          key={variant.id}
+                          onClick={() => setSelectedVariant(variant)}
+                          className={`px-4 py-2.5 text-sm font-medium cursor-pointer transition-all duration-300 ${
+                            selectedVariant?.id === variant.id
+                              ? 'bg-primary-600 text-white shadow-md'
+                              : ''
+                          }`}
+                          style={
+                            selectedVariant?.id !== variant.id
+                              ? {
+                                  backgroundColor: 'var(--input-bg)',
+                                  color: 'var(--text-primary)',
+                                  border: '1px solid var(--border-color)',
+                                  fontFamily:'Poppins',
+                                }
+                              : {fontFamily:'Poppins'}
+                          }
                         >
-                          <FiPlus size={12} />
+                          <span>{variant.name}</span>
+                          <span className="ml-2 font-bold">
+                            Rs. {variant.price}
+                          </span>
                         </button>
-                      </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+              {/* Deal Options (for deal type products) */}
+              {product.product_type === 'deal' &&
+                dealOptions.length > 0 &&
+                dealOptions.map((group) => (
+                  <div key={group.id} className="mt-5">
+                    <h3
+                      className="mb-2 text-sm font-semibold"
+                      style={{ color: 'var(--text-primary)', fontFamily:'Salmond', fontSize:'.9rem' }}
+                    >
+                      {group.group_name}
+                      {group.is_required && (
+                        <span className="ml-1 text-xs text-red-500">*</span>
+                      )}
+                    </h3>
+                    <div className="flex flex-wrap gap-2 outline-none" style={{flexDirection:"column"}}>
+                      {group.items?.map((item) => {
+                        const isSelected =
+                          selectedDealOptions[group.id]?.id === item.id;
+
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() =>
+                              handleDealOptionSelect(group.id, item)
+                            }
+                            className={`px-4 py-2.5 text-sm font-medium cursor-pointer transition-all duration-300 ${
+                              isSelected
+                                ? 'bg-primary-600 text-white shadow-md'
+                                : ''
+                            }`}
+                            style={
+                              !isSelected
+                                ? {
+                                    backgroundColor: 'transparent',
+                                    color: 'var(--text-primary)',
+                                    border: '1px solid var(--border-color)',
+                                    fontFamily:'Poppins',
+                                  }
+                                : {fontFamily:'Poppins'}
+                            }
+                          >
+                            <span>{item.name}</span>
+                            {Number(item.price_adjustment) > 0 && (
+                              <span className="ml-1 text-xs opacity-80">
+                                (+Rs. {item.price_adjustment})
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
+
+              {/* Special Instructions */}
+              <div className="mt-5">
+                <h3
+                  className="mb-2 text-sm font-semibold"
+                  style={{ color: 'var(--text-primary)' , fontFamily:'Salmond'}}
+                >
+                  Special Instructions (Optional)
+                </h3>
+                <textarea
+                  value={specialInstructions}
+                  onChange={(e) => setSpecialInstructions(e.target.value)}
+                  placeholder="E.g., Extra cheese, no onions, less spicy..."
+                  rows={2}
+                  className="input-field resize-none"
+                  style={{backgroundColor:'transparent',fontFamily:'Gotham', borderRadius:'0px'}}
+                />
               </div>
             </div>
-          )}
 
-          {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            className="btn-primary mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base"
-          >
-            <FiShoppingCart size={18} />
-            <span>
-              Add to Cart — Rs.{' '}
-              {selectedVariant
-                ? (selectedVariant.price * quantity).toLocaleString()
-                : (product.base_price * quantity).toLocaleString()}
-            </span>
-          </button>
+            {/* Bottom Bar — Quantity + Add to Cart (Fixed at bottom) */}
+            <div
+              className="flex items-center justify-between gap-4 border-t p-4 sm:p-5"
+              style={{ borderColor: 'grey' }}
+            >
+              {/* Quantity Counter — Left */}
+              <div
+                className="flex items-center gap-3 rounded-full px-2 py-1"
+                style={{
+                  backgroundColor: 'transparent',
+                }}
+              >
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="flex h-9 w-9 items-center justify-center rounded-[14px] cursor-pointer transition-all"
+                  style={{ color: 'var(--text-primary)', backgroundColor:'grey'  }}
+                >
+                  <FiMinus size={22} />
+                </button>
+                <span
+                  className="min-w-[16px] text-center font-bold"
+                  style={{ color: 'var(--text-primary)', fontFamily:'Poppins', fontSize:'1.4rem'}}
+                >
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="flex h-9 w-9 items-center justify-center rounded-[14px] cursor-pointer bg-primary-600 text-white transition-all hover:bg-primary-700"
+                >
+                  <FiPlus size={22} />
+                </button>
+              </div>
+
+              {/* Add to Cart Button — Right */}
+              <button
+                onClick={handleAddToCart}
+                disabled={!product.is_in_stock}
+                style={{borderRadius:'5px', fontFamily:'Salmond', fontSize:'1.2rem', padding:'0px'}}
+                className="btn-primary flex flex-1 items-center justify-between gap-2  text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
+              >
+                <span className='flex item-center justify-center pt-3 px-5 pb-1.5'>
+                  Rs. {totalPrice.toLocaleString()}
+                </span>
+                <span className='flex item-center justify-center pt-3 px-5 pb-1.5'>
+                  Add to Cart 
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

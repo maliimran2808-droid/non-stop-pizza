@@ -23,6 +23,13 @@ const raleway = Raleway({
   subsets: ["latin"],
   weight: ["900"],
 });
+
+const ralewayLight = Raleway({
+  variable: "--font-raleway-light",
+  subsets: ["latin"],
+  weight: ["500"],
+});
+
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -45,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="light" suppressHydrationWarning>
    <body
-  className={`${geistSans.variable} ${geistMono.variable} ${raleway.variable} ${poppins.variable} antialiased`}
+  className={`${geistSans.variable} ${geistMono.variable} ${raleway.variable} ${poppins.variable} ${ralewayLight.variable} antialiased`}
 >
         <ThemeProvider>
           <LoadingScreen />

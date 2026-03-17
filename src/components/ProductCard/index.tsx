@@ -46,20 +46,21 @@ const ProductCard = ({ product, onProductClick, index }: ProductCardProps) => {
   return (
     <div
       ref={cardRef}
-      className={`card cursor-pointer overflow-hidden opacity-0 ${
+      className={`card card-bg-color cursor-pointer overflow-visible p-1.5 opacity-0 ${
         isOutOfStock ? 'pointer-events-auto' : ''
       }`}
       onClick={() => !isOutOfStock && onProductClick(product)}
-      style={isOutOfStock ? { opacity: 0.7 } : {}}
+      style={isOutOfStock ? { opacity: 0.7 } : {borderTopLeftRadius:'20px', borderTopRightRadius:'20px'}}
     >
       {/* Product Image */}
-      <div className="relative h-40 w-full overflow-hidden sm:h-48">
+      <div className="relative h-auto w-full">
         {product.image_url ? (
           <img
             src={product.image_url}
             alt={product.name}
-            className={`h-full w-full object-cover transition-transform duration-500 ${
-              isOutOfStock ? 'grayscale' : 'hover:scale-110'
+            style={{borderTopLeftRadius:'15px', borderTopRightRadius:'15px'}}
+            className={`h-full w-full rouned-t-2xl object-contain transition-transform duration-500 ${
+              isOutOfStock ? 'grayscale' : 'hover:scale-102'
             }`}
           />
         ) : (
@@ -79,38 +80,28 @@ const ProductCard = ({ product, onProductClick, index }: ProductCardProps) => {
 
         {/* New Arrival Badge */}
         {product.is_new_arrival && !isOutOfStock && (
-          <div className="absolute left-2 top-2 rounded-full bg-primary-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
-            New
+          <div className="absolute left-[-16] top-[-19] tracking-wider text-white">
+            <img src="/new-arrivals/new-arrival.webp" width={60} alt="" />
           </div>
         )}
 
         {/* Add Button - Only show if in stock */}
-        {!isOutOfStock && (
-          <button
-            className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary-600 text-white shadow-lg transition-all duration-300 hover:scale-110 hover:bg-primary-700 sm:h-10 sm:w-10"
-            onClick={(e) => {
-              e.stopPropagation();
-              onProductClick(product);
-            }}
-          >
-            <FiPlus size={20} />
-          </button>
-        )}
+       
       </div>
 
       {/* Product Info */}
-      <div className="p-3 sm:p-4">
+      <div className="p-1.5 py-2">
         <h3
           className="truncate text-sm font-bold sm:text-base"
-          style={{ color: 'var(--text-primary)' }}
+          style={{ fontFamily:'Salmond', fontSize:'1.3rem' ,color: 'var(--text-primary)' }}
         >
           {product.name}
         </h3>
 
         {product.description && (
           <p
-            className="mt-1 line-clamp-2 text-xs sm:text-sm"
-            style={{ color: 'var(--text-secondary)' }}
+            className="my-3 line-clamp-2"
+            style={{ fontFamily:'Poppins', fontSize:'12px', lineHeight:'16px' , color: 'var(--product-description)' }}
           >
             {product.description}
           </p>
@@ -118,29 +109,26 @@ const ProductCard = ({ product, onProductClick, index }: ProductCardProps) => {
 
         <div className="mt-2 flex items-center justify-between">
           <span
-            className={`text-base font-extrabold sm:text-lg ${
-              isOutOfStock ? 'line-through opacity-50' : 'text-primary-600'
+            className={`font-extrabold${
+              isOutOfStock ? 'line-through opacity-50' : 'text-primary'
             }`}
-            style={isOutOfStock ? { color: 'var(--text-secondary)' } : {}}
+            style={isOutOfStock ? { color: 'var(--text-secondary)' } : {fontFamily:'Salmond', fontSize:'1.3rem'}}
           >
             Rs. {product.base_price}
           </span>
-
-          {isOutOfStock ? (
-            <span className="text-xs font-semibold text-red-500">
-              Unavailable
-            </span>
-          ) : (
-            product.variants &&
-            product.variants.length > 1 && (
-              <span
-                className="text-[10px] font-medium sm:text-xs"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                {product.variants.length} sizes
-              </span>
-            )
-          )}
+ {!isOutOfStock && (
+          <button
+            className="absolute bottom-[-1] right-[-1] flex px-5 pt-1.5 pb-1 cursor-pointer items-center justify-center bg-primary-600 text-white shadow-lg transition-all duration-300 hover:scale-102"
+            onClick={(e) => {
+              e.stopPropagation();
+              onProductClick(product);
+            }}
+            style={{fontFamily:'Salmond', fontSize:'1.3rem', borderTopLeftRadius:'10px', borderBottomRightRadius:'10px'}}
+          >
+           ADD
+          </button>
+        )}
+         
         </div>
       </div>
     </div>

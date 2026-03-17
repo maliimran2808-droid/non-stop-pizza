@@ -25,6 +25,7 @@ interface ProductForm {
   is_new_arrival: boolean;
   is_active: boolean;
   is_in_stock: boolean;
+  product_type: 'variant' | 'deal';
   image_url: string;
 }
 
@@ -43,6 +44,7 @@ const initialProductForm: ProductForm = {
   is_new_arrival: false,
   is_active: true,
   is_in_stock: true,
+  product_type: 'variant',
   image_url: '',
 };
 
@@ -62,7 +64,14 @@ const AdminProductsPage = () => {
   const [filterCategory, setFilterCategory] = useState('all');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // Deal options state
+  interface DealGroupForm {
+    group_name: string;
+    is_required: boolean;
+    items: { name: string; price_adjustment: string; is_default: boolean }[];
+  }
 
+  const [dealGroups, setDealGroups] = useState<DealGroupForm[]>([]);
   // Fetch data
   useEffect(() => {
     fetchData();
@@ -159,7 +168,85 @@ const AdminProductsPage = () => {
     }
     setVariants((prev) => prev.filter((_, i) => i !== index));
   };
+  // Add deal group
+  const addDealGroup = () => {
+    setDealGroups((prev) => [
+      ...prev,
+      {
+        group_name: '',
+        is_required: true,
+        items: [{ name: '', price_adjustment: '0', is_default: true }],
+      },
+    ]);
+  };
 
+  // Remove deal group
+  const removeDealGroup = (index: number) => {
+    setDealGroups((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Update deal group
+  const updateDealGroup = (index: number, field: string, value: string | boolean) => {
+    setDealGroups((prev) =>
+      prev.map((g, i) => (i === index ? { ...g, [field]: value } : g))
+    );
+  };
+
+  // Add deal item to group
+  const addDealItem = (groupIndex: number) => {
+    setDealGroups((prev) =>
+      prev.map((g, i) =>
+        i === groupIndex
+          ? {
+              ...g,
+              items: [
+                ...g.items,
+                { name: '', price_adjustment: '0', is_default: false },
+              ],
+            }
+          : g
+      )
+    );
+  };
+
+  // Remove deal item from group
+  const removeDealItem = (groupIndex: number, itemIndex: number) => {
+    setDealGroups((prev) =>
+      prev.map((g, i) =>
+        i === groupIndex
+          ? { ...g, items: g.items.filter((_, j) => j !== itemIndex) }
+          : g
+      )
+    );
+  };
+
+  // Update deal item
+  const updateDealItem = (
+    groupIndex: number,
+    itemIndex: number,
+    field: string,
+    value: string | boolean
+  ) => {
+    setDealGroups((prev) =>
+      prev.map((g, i) =>
+        i === groupIndex
+          ? {
+              ...g,
+              items: g.items.map((item, j) => {
+                if (j === itemIndex) {
+                  const updated = { ...item, [field]: value };
+                  return updated;
+                }
+                if (field === 'is_default' && value === true) {
+                  return { ...item, is_default: false };
+                }
+                return item;
+              }),
+            }
+          : g
+      )
+    );
+  };
   // Update variant
   const updateVariant = (index: number, field: keyof VariantForm, value: string | boolean) => {
     setVariants((prev) =>
@@ -184,6 +271,7 @@ const AdminProductsPage = () => {
   const openAddModal = () => {
     setForm(initialProductForm);
     setVariants([{ name: 'Regular', price: '', is_default: true }]);
+    setDealGroups([]);
     setImageFile(null);
     setImagePreview(null);
     setIsEditing(false);
@@ -192,7 +280,7 @@ const AdminProductsPage = () => {
   };
 
   // Open edit modal
-const openEditModal = (product: Product) => {
+  const openEditModal = async (product: Product) => {
     setForm({
       name: product.name,
       slug: product.slug,
@@ -202,8 +290,10 @@ const openEditModal = (product: Product) => {
       is_new_arrival: product.is_new_arrival,
       is_active: product.is_active,
       is_in_stock: product.is_in_stock,
+      product_type: product.product_type || 'variant',
       image_url: product.image_url || '',
     });
+
     if (product.variants && product.variants.length > 0) {
       setVariants(
         product.variants.map((v) => ({
@@ -216,6 +306,37 @@ const openEditModal = (product: Product) => {
       setVariants([
         { name: 'Regular', price: product.base_price.toString(), is_default: true },
       ]);
+    }
+
+    // Fetch deal options if deal type
+    if (product.product_type === 'deal') {
+      try {
+        const { data } = await supabase
+          .from('deal_options')
+          .select('*, items:deal_option_items(*)')
+          .eq('product_id', product.id)
+          .order('display_order', { ascending: true });
+
+        if (data && data.length > 0) {
+          setDealGroups(
+            data.map((group: any) => ({
+              group_name: group.group_name,
+              is_required: group.is_required,
+              items: group.items.map((item: any) => ({
+                name: item.name,
+                price_adjustment: item.price_adjustment.toString(),
+                is_default: item.is_default,
+              })),
+            }))
+          );
+        } else {
+          setDealGroups([]);
+        }
+      } catch (err) {
+        setDealGroups([]);
+      }
+    } else {
+      setDealGroups([]);
     }
 
     setImageFile(null);
@@ -269,6 +390,7 @@ const openEditModal = (product: Product) => {
         is_new_arrival: form.is_new_arrival,
         is_active: form.is_active,
         is_in_stock: form.is_in_stock,
+        product_type: form.product_type,
         image_url: imageUrl || null,
         updated_at: new Date().toISOString(),
       };
@@ -297,7 +419,46 @@ const openEditModal = (product: Product) => {
         }));
 
         await supabase.from('product_variants').insert(variantData);
+        // Save deal options if deal type
+        if (form.product_type === 'deal' && editingId) {
+          // Delete old deal options
+          await supabase
+            .from('deal_options')
+            .delete()
+            .eq('product_id', editingId);
 
+          // Insert new deal groups
+          for (let i = 0; i < dealGroups.length; i++) {
+            const group = dealGroups[i];
+            if (!group.group_name.trim()) continue;
+
+            const { data: groupData } = await supabase
+              .from('deal_options')
+              .insert({
+                product_id: editingId,
+                group_name: group.group_name.trim(),
+                display_order: i,
+                is_required: group.is_required,
+              })
+              .select()
+              .single();
+
+            if (groupData) {
+              const items = group.items
+                .filter((item) => item.name.trim())
+                .map((item) => ({
+                  deal_option_id: groupData.id,
+                  name: item.name.trim(),
+                  price_adjustment: Number(item.price_adjustment) || 0,
+                  is_default: item.is_default,
+                }));
+
+              if (items.length > 0) {
+                await supabase.from('deal_option_items').insert(items);
+              }
+            }
+          }
+        }
         toast.success('Product updated successfully! ✅');
       } else {
         // Create product
@@ -318,7 +479,39 @@ const openEditModal = (product: Product) => {
         }));
 
         await supabase.from('product_variants').insert(variantData);
+        // Save deal options if deal type
+        if (form.product_type === 'deal' && newProduct) {
+          for (let i = 0; i < dealGroups.length; i++) {
+            const group = dealGroups[i];
+            if (!group.group_name.trim()) continue;
 
+            const { data: groupData } = await supabase
+              .from('deal_options')
+              .insert({
+                product_id: newProduct.id,
+                group_name: group.group_name.trim(),
+                display_order: i,
+                is_required: group.is_required,
+              })
+              .select()
+              .single();
+
+            if (groupData) {
+              const items = group.items
+                .filter((item) => item.name.trim())
+                .map((item) => ({
+                  deal_option_id: groupData.id,
+                  name: item.name.trim(),
+                  price_adjustment: Number(item.price_adjustment) || 0,
+                  is_default: item.is_default,
+                }));
+
+              if (items.length > 0) {
+                await supabase.from('deal_option_items').insert(items);
+              }
+            }
+          }
+        }
         toast.success('Product added successfully! 🍕');
       }
 
@@ -726,7 +919,55 @@ const openEditModal = (product: Product) => {
                     }
                   />
                 </div>
-
+                {/* Product Type */}
+                <div>
+                  <label
+                    className="mb-1.5 text-sm font-medium"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    Product Type *
+                  </label>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleFormChange('product_type', 'variant')}
+                      className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                        form.product_type === 'variant'
+                          ? 'bg-primary-600 text-white shadow-md'
+                          : ''
+                      }`}
+                      style={
+                        form.product_type !== 'variant'
+                          ? {
+                              backgroundColor: 'var(--input-bg)',
+                              color: 'var(--text-primary)',
+                              border: '1px solid var(--border-color)',
+                            }
+                          : {}
+                      }
+                    >
+                      📏 Variant (Sizes)
+                    </button>
+                    <button
+                      onClick={() => handleFormChange('product_type', 'deal')}
+                      className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                        form.product_type === 'deal'
+                          ? 'bg-primary-600 text-white shadow-md'
+                          : ''
+                      }`}
+                      style={
+                        form.product_type !== 'deal'
+                          ? {
+                              backgroundColor: 'var(--input-bg)',
+                              color: 'var(--text-primary)',
+                              border: '1px solid var(--border-color)',
+                            }
+                          : {}
+                      }
+                    >
+                      🎁 Deal (Multiple Options)
+                    </button>
+                  </div>
+                </div>
                 {/* Toggles */}
                 {/* Toggles */}
                 <div className="flex flex-wrap gap-4">
@@ -782,7 +1023,8 @@ const openEditModal = (product: Product) => {
                   </label>
                 </div>
 
-                {/* Variants */}
+                              {/* Variants - Only for variant type */}
+                {form.product_type === 'variant' && (
                 <div>
                   <div className="mb-2 flex items-center justify-between">
                     <label
@@ -855,6 +1097,177 @@ const openEditModal = (product: Product) => {
                     ))}
                   </div>
                 </div>
+      )}
+                      {/* Deal Options - Only for deal type */}
+                {form.product_type === 'deal' && (
+                  <div>
+                    <div className="mb-2 flex items-center justify-between">
+                      <label
+                        className="text-sm font-medium"
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        Deal Option Groups *
+                      </label>
+                      <button
+                        onClick={addDealGroup}
+                        className="flex items-center gap-1 text-xs font-medium text-primary-600 transition-all hover:text-primary-700"
+                      >
+                        <FiPlus size={14} />
+                        Add Group
+                      </button>
+                    </div>
+
+                    {dealGroups.length === 0 && (
+                      <p
+                        className="rounded-xl border border-dashed p-4 text-center text-sm"
+                        style={{
+                          color: 'var(--text-secondary)',
+                          borderColor: 'var(--border-color)',
+                        }}
+                      >
+                        No deal groups yet. Click &quot;Add Group&quot; to add options like &quot;Choose Drink&quot;, &quot;Choose Side&quot;, etc.
+                      </p>
+                    )}
+
+                    <div className="space-y-4">
+                      {dealGroups.map((group, gIndex) => (
+                        <div
+                          key={gIndex}
+                          className="rounded-xl p-4"
+                          style={{
+                            backgroundColor: 'var(--bg-secondary)',
+                            border: '1px solid var(--border-color)',
+                          }}
+                        >
+                          {/* Group Header */}
+                          <div className="mb-3 flex items-center gap-2">
+                            <input
+                              type="text"
+                              className="input-field flex-1"
+                              placeholder="Group name (e.g., Choose Drink)"
+                              value={group.group_name}
+                              onChange={(e) =>
+                                updateDealGroup(gIndex, 'group_name', e.target.value)
+                              }
+                            />
+                            <label className="flex items-center gap-1 whitespace-nowrap">
+                              <input
+                                type="checkbox"
+                                checked={group.is_required}
+                                onChange={(e) =>
+                                  updateDealGroup(gIndex, 'is_required', e.target.checked)
+                                }
+                                className="accent-primary-600"
+                              />
+                              <span
+                                className="text-xs"
+                                style={{ color: 'var(--text-secondary)' }}
+                              >
+                                Required
+                              </span>
+                            </label>
+                            <button
+                              onClick={() => removeDealGroup(gIndex)}
+                              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 transition-all hover:bg-red-100 hover:text-red-600"
+                            >
+                              <FiTrash2 size={14} />
+                            </button>
+                          </div>
+
+                          {/* Group Items */}
+                                                   {/* Group Items */}
+                          <div className="space-y-2">
+                            {group.items.map((item, iIndex) => (
+                              <div
+                                key={iIndex}
+                                className="flex flex-col gap-2 rounded-lg p-2 sm:flex-row sm:items-center"
+                                style={{
+                                  backgroundColor: 'var(--bg-primary)',
+                                  border: '1px solid var(--border-color)',
+                                }}
+                              >
+                                {/* Option Name */}
+                                <div className="flex-1">
+                                  <input
+                                    type="text"
+                                    className="input-field w-full"
+                                    placeholder="Option name (e.g., Pepsi, Orange Juice)"
+                                    value={item.name}
+                                    onChange={(e) =>
+                                      updateDealItem(gIndex, iIndex, 'name', e.target.value)
+                                    }
+                                  />
+                                </div>
+
+                                {/* Price + Default + Delete */}
+                                <div className="flex items-center gap-2">
+                                  {/* Extra Price */}
+                                  <div className="relative">
+                                    <span
+                                      className="absolute left-3 top-1/2 -translate-y-1/2 text-xs"
+                                      style={{ color: 'var(--text-secondary)' }}
+                                    >
+                                      +Rs.
+                                    </span>
+                                    <input
+                                      type="number"
+                                      className="input-field w-28 pl-12"
+                                      placeholder="0"
+                                      value={item.price_adjustment}
+                                      onChange={(e) =>
+                                        updateDealItem(gIndex, iIndex, 'price_adjustment', e.target.value)
+                                      }
+                                    />
+                                  </div>
+
+                                  {/* Default Radio */}
+                                  <label className="flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-2"
+                                    style={{
+                                      backgroundColor: item.is_default ? 'var(--bg-secondary)' : 'transparent',
+                                    }}
+                                  >
+                                    <input
+                                      type="radio"
+                                      name={`default_deal_${gIndex}`}
+                                      checked={item.is_default}
+                                      onChange={() =>
+                                        updateDealItem(gIndex, iIndex, 'is_default', true)
+                                      }
+                                      className="accent-primary-600"
+                                    />
+                                    <span
+                                      className="text-xs font-medium"
+                                      style={{ color: 'var(--text-secondary)' }}
+                                    >
+                                      Default
+                                    </span>
+                                  </label>
+
+                                  {/* Delete */}
+                                  <button
+                                    onClick={() => removeDealItem(gIndex, iIndex)}
+                                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-400 transition-all hover:bg-red-100 hover:text-red-600"
+                                  >
+                                    <FiTrash2 size={14} />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Add Item Button */}
+                          <button
+                            onClick={() => addDealItem(gIndex)}
+                            className="mt-2 flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700"
+                          >
+                            <FiPlus size={12} />
+                            Add Option
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Save Button */}
                 <div className="flex gap-3 pt-2">

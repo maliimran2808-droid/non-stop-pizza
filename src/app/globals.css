@@ -1,5 +1,27 @@
 @import "tailwindcss";
+@font-face {
+  font-family: 'Gotham';
+  src: url('/fonts/Gotham-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
+@font-face {
+  font-family: 'Salmond';
+  src: url('/fonts/Salmond-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gotham-SemiBold';
+  src: url('/fonts/Gotham-SemiBold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 /* ============================================ */
 /* NONSTOP PIZZA - Custom Theme (Tailwind v4)  */
 /* ============================================ */
@@ -100,13 +122,20 @@
   --overlay-bg: rgba(0, 0, 0, 0.5);
   --header-bg: rgba(255, 255, 255, 0.95);
   --input-bg: #f3f4f6;
+  --product-description:rgb(211, 207, 207);
+  --bg-card-detail: #fff;
+  --product-model: #fff;
 }
+
+
 
 .dark {
   --bg-white-primary: #121212;
   --bg-primary: #000000;
+  --bg-card-detail: #262626;
   --bg-secondary: #1e1e1e;
-  --bg-card: #1a1818;
+  --bg-card: #262626;
+  --product-description:rgb(211, 207, 207);
   --text-primary: #fff;
   --text-secondary: #fff;
   --border-color: #2e2e2e;
@@ -114,6 +143,7 @@
   --overlay-bg: rgba(0, 0, 0, 0.7);
   --header-bg: rgba(18, 18, 18, 0.95);
   --input-bg: #2a2a2a;
+  --product-model: #121212;
 }
 
 /* ============================================ */

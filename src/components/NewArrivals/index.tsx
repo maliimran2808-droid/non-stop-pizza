@@ -45,18 +45,9 @@ const NewArrivals = ({ products, onProductClick }: NewArrivalsProps) => {
     <section ref={sectionRef} className="opacity-0">
       <div className="container-custom py-6 sm:py-8">
         {/* Section Title */}
-        <div className="mb-4 flex items-center gap-3 sm:mb-6">
-          <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-primary-500 to-yellow-500" />
-          <h2
-            className="text-xl font-bold sm:text-2xl"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            🔥 New Arrivals
-          </h2>
-          <div
-            className="hidden h-px flex-1 sm:block"
-            style={{ backgroundColor: 'var(--border-color)' }}
-          />
+        <div className="mb-4 flex items-center justify-center sm:mb-6">
+          <div className="h-auto w-1.5 rounded-[10px] bg-gradient-to-b from-primary-500 to-yellow-500" />
+          <img src="/new-arrivals.webp" alt="" className='w-[95%]'/>
         </div>
 
         {/* Products Grid */}

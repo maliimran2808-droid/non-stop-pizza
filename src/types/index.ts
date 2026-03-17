@@ -26,11 +26,13 @@ export interface Product {
   is_new_arrival: boolean;
   is_active: boolean;
     is_in_stock: boolean;
+    product_type: 'variant' | 'deal';
   display_order: number;
   created_at: string;
   updated_at: string;
   category?: Category;
   variants?: ProductVariant[];
+  deal_options?: DealOption[];
   suggestions?: Product[];
 }
 
@@ -170,4 +172,24 @@ export interface Voucher {
   expires_at: string | null;
   created_at: string;
   updated_at: string;
+}
+// DEAL OPTION GROUP
+export interface DealOption {
+  id: string;
+  product_id: string;
+  group_name: string;
+  display_order: number;
+  is_required: boolean;
+  created_at: string;
+  items?: DealOptionItem[];
+}
+
+// DEAL OPTION ITEM (choices)
+export interface DealOptionItem {
+  id: string;
+  deal_option_id: string;
+  name: string;
+  price_adjustment: number;
+  is_default: boolean;
+  created_at: string;
 }

@@ -34,9 +34,10 @@ const MenuSection = () => {
           .order('display_order', { ascending: true });
 
         // Fetch products with variants
+               // Fetch products with variants and deal options
         const { data: productsData } = await supabase
           .from('products')
-          .select('*, variants:product_variants(*)')
+          .select('*, variants:product_variants(*), deal_options(*, items:deal_option_items(*))')
           .eq('is_active', true)
           .order('display_order', { ascending: true });
 
