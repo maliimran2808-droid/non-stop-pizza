@@ -449,10 +449,10 @@ const BottomCartBar = () => {
                   style={{ borderTop: '1px solid var(--border-color)' }}
                 >
                   <h3
-                    className="mb-3 text-sm font-semibold"
+                    className="mb-3"
                    style={{ color: 'var(--text-secondary)', fontFamily:'Poppins' }}
                   >
-                    🍟 PEOPLE ALSO ORDER
+                    People Also Order
                   </h3>
 
                   <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
@@ -461,17 +461,18 @@ const BottomCartBar = () => {
                         key={sug.id}
                         className="flex min-w-[130px] flex-shrink-0 flex-col overflow-hidden rounded-xl"
                         style={{
-                          backgroundColor: 'var(--bg-card)',
-                          border: '1px solid var(--border-color)',
+                          backgroundColor: 'transparent',
+                          position:'relative'
+                          // border: '1px solid var(--border-color)',
                         }}
                       >
                         {/* Image */}
-                        <div className="relative h-20 w-full overflow-hidden">
+                        <div className="relative h-30 w-full overflow-hidden">
                           {sug.image_url ? (
                             <img
                               src={sug.image_url}
                               alt={sug.name}
-                              className="h-full w-full object-cover"
+                              className="h-full relative w-full rounded-[20px] object-cover"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
@@ -483,20 +484,22 @@ const BottomCartBar = () => {
                         {/* Info */}
                         <div className="p-2">
                           <p
-                            className="truncate text-xs font-semibold"
-                            style={{ color: 'var(--text-primary)' }}
+                            className="truncate text-[11px]"
+                            style={{ color: 'var(--text-primary)', fontFamily:'Poppins' }}
                           >
                             {sug.name}
                           </p>
-                          <div className="mt-1.5 flex items-center justify-between">
-                            <span className="text-xs font-bold text-primary-600">
+                          <div className="flex items-center justify-between">
+
+                            <span className="text-[13px]">
                               Rs. {sug.base_price}
                             </span>
                             <button
                               onClick={() => handleAddSuggestion(sug)}
-                              className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-600 text-white transition-all hover:bg-primary-700"
+                              className="flex h-6 w-6 absolute top-2 right-2 items-center cursor-pointer justify-center rounded-full bg-white transition-all"
+                              style={{color:'#dc2626'}}
                             >
-                              <FiPlus size={12} />
+                              <FiPlus size={17} />
                             </button>
                           </div>
                         </div>
@@ -578,7 +581,7 @@ const BottomCartBar = () => {
               <button
                 onClick={handleCheckout}
                 
-                className="flex w-full items-center justify-center gap-2 py-4 text-[1.13rem] font-bold text-white transition-all"
+                className="flex w-full items-center cursor-pointer justify-center gap-2 py-4 text-[1.13rem] font-bold text-white transition-all"
                   style={{backgroundColor:'#dc2626', fontFamily:'Poppins'}}            
                 >
                 <span>Checkout</span>
