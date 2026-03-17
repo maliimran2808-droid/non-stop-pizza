@@ -19,7 +19,10 @@ const MenuSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Get active category based on scroll position
-  const categoryIds = categories.map((c) => c.id);
+  const categoryIds = [
+    ...(newArrivals.length > 0 ? ['new-arrivals'] : []),
+    ...categories.map((c) => c.id),
+  ];
   const activeCategory = useActiveCategoryOnScroll(categoryIds);
 
   // Fetch categories and products
@@ -129,19 +132,38 @@ const MenuSection = () => {
       {/* Search Section - Above everything */}
       <SearchSection onProductClick={handleProductClick} />
 
-      {/* Sticky Category Switcher */}
+         {/* Sticky Category Switcher — with New Arrivals */}
       <CategorySwitcher
-        categories={categories}
+        categories={
+          newArrivals.length > 0
+            ? [
+                {
+                  id: 'new-arrivals',
+                  name: 'New Arrivals',
+                  slug: 'new-arrivals',
+                  image_url: null,
+                  display_order: 0,
+                  is_active: true,
+                  created_at: '',
+                  updated_at: '',
+                },
+                ...categories,
+              ]
+            : categories
+        }
         activeCategory={activeCategory}
         onCategoryClick={handleCategoryClick}
       />
 
       {/* New Arrivals Section */}
-      <NewArrivals
-        products={newArrivals}
-        onProductClick={handleProductClick}
-      />
-
+      {newArrivals.length > 0 && (
+        <section id="category-new-arrivals" className="scroll-mt-16">
+          <NewArrivals
+            products={newArrivals}
+            onProductClick={handleProductClick}
+          />
+        </section>
+      )} 
       {/* Category Sections */}
            {categories.map((category) => {
         const categoryProducts = getProductsByCategory(category.id);

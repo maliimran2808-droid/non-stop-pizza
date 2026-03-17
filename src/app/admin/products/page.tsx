@@ -1024,80 +1024,83 @@ const AdminProductsPage = () => {
                 </div>
 
                               {/* Variants - Only for variant type */}
-                {form.product_type === 'variant' && (
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label
-                      className="text-sm font-medium"
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      Variants (Sizes) *
-                    </label>
-                    <button
-                      onClick={addVariant}
-                      className="flex items-center gap-1 text-xs font-medium text-primary-600 transition-all hover:text-primary-700"
-                    >
-                      <FiPlus size={14} />
-                      Add Variant
-                    </button>
-                  </div>
-
-                  <div className="space-y-2">
-                    {variants.map((variant, index) => (
+                                 {variants.map((variant, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 rounded-xl p-3"
+                        className="flex flex-col gap-2 rounded-xl p-3 sm:flex-row sm:items-center"
                         style={{
                           backgroundColor: 'var(--bg-secondary)',
                           border: '1px solid var(--border-color)',
                         }}
                       >
-                        <input
-                          type="text"
-                          className="input-field flex-1"
-                          placeholder="Size name (e.g., Small)"
-                          value={variant.name}
-                          onChange={(e) =>
-                            updateVariant(index, 'name', e.target.value)
-                          }
-                        />
-                        <input
-                          type="number"
-                          className="input-field w-28"
-                          placeholder="Price"
-                          value={variant.price}
-                          onChange={(e) =>
-                            updateVariant(index, 'price', e.target.value)
-                          }
-                        />
-                        <label className="flex cursor-pointer items-center gap-1 whitespace-nowrap">
+                        {/* Variant Name */}
+                        <div className="flex-1">
                           <input
-                            type="radio"
-                            name="default_variant"
-                            checked={variant.is_default}
-                            onChange={() =>
-                              updateVariant(index, 'is_default', true)
+                            type="text"
+                            className="input-field w-full"
+                            placeholder="Size name (e.g., Small, Regular, Large)"
+                            value={variant.name}
+                            onChange={(e) =>
+                              updateVariant(index, 'name', e.target.value)
                             }
-                            className="accent-primary-600"
                           />
-                          <span
-                            className="text-xs"
-                            style={{ color: 'var(--text-secondary)' }}
+                        </div>
+
+                        {/* Price + Default + Delete */}
+                        <div className="flex items-center gap-2">
+                          {/* Price */}
+                          <div className="relative">
+                            <span
+                              className="absolute right-10 top-1/2 -translate-y-1/2 text-xs"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              Rs.
+                            </span>
+                            <input
+                              type="number"
+                              className="input-field w-28 pl-10"
+                              placeholder="0"
+                              value={variant.price}
+                              onChange={(e) =>
+                                updateVariant(index, 'price', e.target.value)
+                              }
+                            />
+                          </div>
+
+                          {/* Default Radio */}
+                          <label
+                            className="flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2 py-2"
+                            style={{
+                              backgroundColor: variant.is_default ? 'var(--bg-primary)' : 'transparent',
+                            }}
                           >
-                            Default
-                          </span>
-                        </label>
-                        <button
-                          onClick={() => removeVariant(index)}
-                          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 transition-all hover:bg-red-100 hover:text-red-600"
-                        >
-                          <FiTrash2 size={14} />
-                        </button>
+                            <input
+                              type="radio"
+                              name="default_variant"
+                              checked={variant.is_default}
+                              onChange={() =>
+                                updateVariant(index, 'is_default', true)
+                              }
+                              className="accent-primary-600"
+                            />
+                            <span
+                              className="text-xs font-medium"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              Default
+                            </span>
+                          </label>
+
+                          {/* Delete */}
+                          <button
+                            onClick={() => removeVariant(index)}
+                            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-400 transition-all hover:bg-red-100 hover:text-red-600"
+                          >
+                            <FiTrash2 size={14} />
+                          </button>
+                        </div>
                       </div>
                     ))}
-                  </div>
-                </div>
-      )}
                       {/* Deal Options - Only for deal type */}
                 {form.product_type === 'deal' && (
                   <div>
