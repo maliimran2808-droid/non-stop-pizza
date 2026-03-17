@@ -544,9 +544,7 @@ body {
     transform: translateY(-2px);
     margin-bottom: 15px;
   }
-  .bg-header_top img{
-    transform: scale(1.7);
-  }
+ 
   .searchInput{
     padding:  9px 8px !important;
     font-size: 12px !important;
