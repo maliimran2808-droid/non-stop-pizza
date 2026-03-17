@@ -199,7 +199,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative z-10 w-full overflow-hidden rounded-3xl shadow-2xl sm:max-w-[90%] lg:max-w-[85vw]"
+        className="relative z-10 w-full overflow-auto rounded-3xl shadow-2xl sm:max-w-[90%] lg:max-w-[85vw]"
         style={{
           backgroundColor: 'var(--product-model)',
           border:'1px solid grey',
