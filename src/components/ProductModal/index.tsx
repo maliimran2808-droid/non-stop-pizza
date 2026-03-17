@@ -203,6 +203,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
         style={{
           backgroundColor: 'var(--product-model)',
           border:'1px solid grey',
+          maxHeight:'85vh'
         }}
       >
         {/* Close Button */}
