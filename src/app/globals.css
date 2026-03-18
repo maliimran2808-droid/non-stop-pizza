@@ -118,6 +118,7 @@
   --text-primary: #1a1a1a;
   --text-secondary: #6b7280;
   --border-color: #e5e5e5;
+  --separator-color: #e5e5e5;
   --shadow-color: rgba(0, 0, 0, 0.1);
   --overlay-bg: rgba(0, 0, 0, 0.5);
   --header-bg: rgba(255, 255, 255, 0.95);
@@ -125,12 +126,17 @@
   --product-description:rgb(211, 207, 207);
   --bg-card-detail: #fff;
   --product-model: #fff;
+  --checkout-page: #f8f8f8;
+  --input-checkout: #fff;
+  --input-checkcolor: #e5e5e5;
+  --input-checkcolorr: #fff;
 }
 
 
 
 .dark {
   --bg-white-primary: #121212;
+  --input-checkout: #000;
   --bg-primary: #000000;
   --bg-card-detail: #262626;
   --bg-secondary: #1e1e1e;
@@ -139,11 +145,15 @@
   --text-primary: #fff;
   --text-secondary: #fff;
   --border-color: #2e2e2e;
+  --separator-color:#585656;
   --shadow-color: rgba(0, 0, 0, 0.3);
   --overlay-bg: rgba(0, 0, 0, 0.7);
   --header-bg: rgba(18, 18, 18, 0.95);
   --input-bg: #2a2a2a;
   --product-model: #121212;
+  --checkout-page:#201d1d;
+  --input-checkcolor: #e5e5e5;
+  --input-checkcolorr: #dc2626;
 }
 
 /* ============================================ */
@@ -312,8 +322,8 @@ body {
   border: 1px solid var(--border-color);
   width: 100%;
   border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
+  padding: 1.2rem 1.2rem;
+  font-size: 0.895rem;
   transition: all 0.3s ease;
   outline: none;
 }

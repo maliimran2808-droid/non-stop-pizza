@@ -467,126 +467,104 @@ const CheckoutPage = () => {
   return (
     <div className="min-h-screen pb-8">
       {/* Header */}
-      <div
-        className="checkout-section border-b py-4"
-        style={{ borderColor: 'var(--border-color)' }}
-      >
-        <div className="container-custom flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-gray-100"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            <FiArrowLeft size={20} />
-          </button>
-          <div>
-            <h1
-              className="text-xl font-bold sm:text-2xl"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Checkout
-            </h1>
-            <p className="text-xs sm:text-sm" style={{ color: 'var(--text-secondary)' }}>
-              {totalItems} {totalItems === 1 ? 'item' : 'items'} in cart
-            </p>
-          </div>
-        </div>
-      </div>
+      
 
       <div className="container-custom mt-6">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 max-w-[80vw] mx-auto gap-6 lg:grid-cols-3">
           {/* LEFT - Form */}
           <div className="lg:col-span-2">
             {/* Order Items */}
            
             {/* Customer Details */}
             <div
-              className="checkout-section mt-6 rounded-2xl p-5"
+              className="checkout-section mt-6 rounded-2xl p-[3rem]"
               style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--checkout-page)',
+             
               }}
             >
               <h2
-                className="mb-4 flex items-center gap-2 text-lg font-bold"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                <FiUser size={20} className="text-primary-600" />
-                Delivery Details
+                className="flex flex-col items-start p-0 m-0 font-semibold text-lg"
+                style={{ color: 'var(--text-primary)', fontFamily:'Poppins' , letterSpacing:'.7px', fontSize:'1.4rem'}}>
+                Checkout
+            
               </h2>
+    <span style={{color:'var(--text-primary)', fontFamily:'Poppins'}}>This is a <strong>Deliver Order<img className='inline mx-1 w-6' src='/delivery.webp'/></strong></span>
+                <p className='text-sm' style={{color:'var(--text-primary)', fontFamily:'Poppins'}}>Just a last step, please enter your details:</p>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+<div style={{width:'100%', height:'2px', backgroundColor:'var(--separator-color)', margin:'20px auto'}}></div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2" style={{fontFamily:'Poppins'}}>
+                
                 <div>
                   <label className="mb-1 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                    <FiUser size={14} /> Full Name *
+                     Full Name
                   </label>
-                  <input type="text" className="input-field" placeholder="Enter your name" value={form.customer_name} onChange={(e) => handleFormChange('customer_name', e.target.value)} />
+                  <input style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}} type="text" className="input-field" placeholder="Full Name" value={form.customer_name} onChange={(e) => handleFormChange('customer_name', e.target.value)} />
                   {errors.customer_name && <p className="mt-1 text-xs text-red-500">{errors.customer_name}</p>}
                 </div>
 
                 <div>
                   <label className="mb-1 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                    <FiPhone size={14} /> Phone Number *
+                   Phone Number
                   </label>
-                  <input type="tel" className="input-field" placeholder="03XX XXXXXXX" value={form.customer_phone} onChange={(e) => handleFormChange('customer_phone', e.target.value)} />
+                  <input style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}} type="tel" className="input-field" placeholder="03xx-xxxxxxx" value={form.customer_phone} onChange={(e) => handleFormChange('customer_phone', e.target.value)} />
                   {errors.customer_phone && <p className="mt-1 text-xs text-red-500">{errors.customer_phone}</p>}
                 </div>
 
                 <div>
                   <label className="mb-1 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                    <FiMail size={14} /> Email (Optional)
+                   Email
                   </label>
-                  <input type="email" className="input-field" placeholder="your@email.com" value={form.customer_email} onChange={(e) => handleFormChange('customer_email', e.target.value)} />
+                  <input style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}} type="email" className="input-field" placeholder="Enter your email" value={form.customer_email} onChange={(e) => handleFormChange('customer_email', e.target.value)} />
                   {errors.customer_email && <p className="mt-1 text-xs text-red-500">{errors.customer_email}</p>}
                 </div>
 
                 <div>
                   <label className="mb-1 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                    <FiNavigation size={14} /> Area *
+                    Area
                   </label>
-                  <input type="text" className="input-field" placeholder="E.g., Gulshan, DHA, Saddar" value={form.area} onChange={(e) => handleFormChange('area', e.target.value)} />
+                  <input style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}} type="text" className="input-field" placeholder="E.g., Gulshan, DHA, Saddar" value={form.area} onChange={(e) => handleFormChange('area', e.target.value)} />
                   {errors.area && <p className="mt-1 text-xs text-red-500">{errors.area}</p>}
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="mb-1 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                    <FiMapPin size={14} /> Full Address *
+                    Full Address
                   </label>
-                  <input type="text" className="input-field" placeholder="House #, Street #, Block, Town" value={form.address} onChange={(e) => handleFormChange('address', e.target.value)} />
+                  <input style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}} type="text" className="input-field" placeholder="Enter your complete address" value={form.address} onChange={(e) => handleFormChange('address', e.target.value)} />
                   {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
                 </div>
 
                 <div>
                   <label className="mb-1 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                    <FiMapPin size={14} /> Near Landmark (Optional)
+                    Near Landmark
                   </label>
-                  <input type="text" className="input-field" placeholder="Near mosque, school, etc." value={form.landmark} onChange={(e) => handleFormChange('landmark', e.target.value)} />
+                  <input style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}} type="text" className="input-field" placeholder="any famous place nearby" value={form.landmark} onChange={(e) => handleFormChange('landmark', e.target.value)} />
                 </div>
 
                 <div>
                   <label className="mb-1 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                    <FiFileText size={14} /> Delivery Instructions (Optional)
+                  Delivery Instructions
                   </label>
-                  <input type="text" className="input-field" placeholder="Ring the bell, call on arrival..." value={form.delivery_instructions} onChange={(e) => handleFormChange('delivery_instructions', e.target.value)} />
+                  <input style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}} type="text" className="input-field" placeholder="Ring the bell, call on arrival..." value={form.delivery_instructions} onChange={(e) => handleFormChange('delivery_instructions', e.target.value)} />
                 </div>
               </div>
             </div>
 
             {/* Payment Method */}
             <div
-              className="checkout-section mt-6 rounded-2xl p-5"
+              className="checkout-section mt-6 rounded-2xl py-3 px-[3rem]"
               style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--checkout-page)',
+               
               }}
             >
-              <h2
-                className="mb-4 flex items-center gap-2 text-lg font-bold"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                <FiCreditCard size={20} className="text-primary-600" />
-                Payment Method
-              </h2>
+            <label className="mb-2 flex items-center gap-1 text-sm font-medium" style={{ color: 'var(--text-primary)', fontFamily:'Poppins' }}>
+                   Payment Information
+                  </label>
+                   
+           
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {/* COD */}
@@ -594,14 +572,14 @@ const CheckoutPage = () => {
                   onClick={() => handleFormChange('payment_method', 'cod')}
                   className={`flex items-center gap-3 rounded-xl p-4 transition-all duration-300 ${
                     form.payment_method === 'cod'
-                      ? 'border-2 border-primary-600 bg-primary-50'
+                      ? 'border-2 border-primary-600'
                       : ''
                   }`}
                   style={
                     form.payment_method !== 'cod'
                       ? {
                           backgroundColor: 'var(--bg-primary)',
-                          border: '2px solid var(--border-color)',
+                          border: '2px solid var(--input-checkcolor)',
                         }
                       : {}
                   }
@@ -610,13 +588,13 @@ const CheckoutPage = () => {
                     className={`flex h-12 w-12 items-center justify-center rounded-full ${
                       form.payment_method === 'cod'
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100'
+                        : 'transparent'
                     }`}
                   >
                     <FiDollarSign size={22} />
                   </div>
-                  <div className="text-left">
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  <div className="text-left" style={{fontFamily:'Poppins'}}>
+                    <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
                       Cash on Delivery
                     </p>
                     <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
@@ -630,17 +608,18 @@ const CheckoutPage = () => {
 
                 {/* Card */}
                 <button
+                disabled
                   onClick={() => handleFormChange('payment_method', 'card')}
                   className={`flex items-center gap-3 rounded-xl p-4 transition-all duration-300 ${
                     form.payment_method === 'card'
-                      ? 'border-2 border-primary-600 bg-primary-50'
+                      ? 'border-2 border-primary-600'
                       : ''
                   }`}
                   style={
                     form.payment_method !== 'card'
                       ? {
                           backgroundColor: 'var(--bg-primary)',
-                          border: '2px solid var(--border-color)',
+                          border: '2px solid var(--input-checkcolor)',
                         }
                       : {}
                   }
@@ -649,17 +628,18 @@ const CheckoutPage = () => {
                     className={`flex h-12 w-12 items-center justify-center rounded-full ${
                       form.payment_method === 'card'
                         ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100'
+                        : ''
                     }`}
+                   
                   >
                     <FiCreditCard size={22} />
                   </div>
-                  <div className="text-left">
-                    <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  <div className="text-left"  style={{fontFamily:"Poppins"}}>
+                    <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
                       Credit / Debit Card
                     </p>
                     <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      Visa, Master, UnionPay, PayPak
+                      Visa, Master, UnionPay, PayPak (COMING SOON)
                     </p>
                   </div>
                   {form.payment_method === 'card' && (
@@ -710,45 +690,45 @@ const CheckoutPage = () => {
           </div>
 
           {/* RIGHT - Order Summary (Sticky) */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 mt-6">
             <div
               className="checkout-section sticky top-4 rounded-2xl p-5"
               style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--checkout-page)',
+      
               }}
             >
-              <h2 className="mb-4 text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-                Order Summary
-              </h2>
+           
 
               {/* Items Summary */}
               <div className="space-y-2">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between text-sm">
-                    <span style={{ color: 'var(--text-secondary)' }}>
-                      {item.product.name} x{item.quantity}
+                  <div key={item.id} className="flex items-center justify-between text-sm" style={{fontFamily:'Poppins'}}>
+                    <span style={{ color: 'var(--text-primary)' }}>
+                      {item.quantity} x {item.product.name}
                     </span>
-                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                    <span className="font-bold text-[15px]" style={{ color: 'var(--text-primary)', fontFamily:'Poppins' }}>
                       Rs. {(item.variant.price * item.quantity).toLocaleString()}
                     </span>
                   </div>
                 ))}
               </div>
 
-              <div className="my-4 h-px" style={{ backgroundColor: 'var(--border-color)' }} />
-
+              <div className="my-4 h-px" style={{ backgroundColor: 'var(--text-primary)' }} />
+   <h2 className="mb-4 text-lg font-bold" style={{ color: 'var(--text-primary)', fontFamily:'Poppins' }}>
+                Your Order
+              </h2>
               {/* Subtotal */}
-              <div className="flex items-center justify-between text-sm">
-                <span style={{ color: 'var(--text-secondary)' }}>Subtotal</span>
+              <div className="flex items-center justify-between text-sm" style={{fontFamily:'Poppins'}}>
+                <span style={{ color: 'var(--text-primary)' }}>Subtotal</span>
                 <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                   Rs. {subtotal.toLocaleString()}
                 </span>
               </div>
 
               {/* Delivery Fee */}
-              <div className="mt-2 flex items-center justify-between text-sm">
-                <span style={{ color: 'var(--text-secondary)' }}>Delivery Fee</span>
+              <div className="mt-2 flex items-center justify-between text-sm" style={{fontFamily:'Poppins'}}>
+                <span style={{ color: 'var(--text-primary)' }}>Delivery Fee</span>
                 <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
                   Rs. {deliveryFee}
                 </span>
@@ -761,9 +741,9 @@ const CheckoutPage = () => {
                     className="flex items-center justify-between rounded-xl p-3"
                     style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac' }}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2" style={{fontFamily:'Poppins'}}>
                       <span className="text-lg">🎟️</span>
-                      <div>
+                      <div style={{fontFamily:'Poppins'}}>
                         <p className="text-sm font-bold text-green-700">{appliedVoucher.code}</p>
                         <p className="text-[10px] text-green-600">
                           {appliedVoucher.discount_type === 'percentage'
@@ -774,17 +754,17 @@ const CheckoutPage = () => {
                     </div>
                     <button
                       onClick={removeVoucher}
-                      className="rounded-lg bg-red-100 px-3 py-1 text-xs font-semibold text-red-600 transition-all hover:bg-red-200"
+                      className="rounded-lg bg-red-100 px-3 py-1 text-xs font-semibold text-red-600 transition-all"
                     >
                       ✕ Remove
                     </button>
                   </div>
                 ) : (
                   <div>
-                    <p className="mb-2 text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                    <p className="mb-2 text-xs font-medium" style={{ color: 'var(--text-primary)', fontFamily:'Poppins' }}>
                       🎟️ Have a voucher code?
                     </p>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" style={{fontFamily:'Poppins'}}>
                       <input
                         type="text"
                         className="input-field flex-1 uppercase"
@@ -796,7 +776,7 @@ const CheckoutPage = () => {
                       <button
                         onClick={applyVoucher}
                         disabled={isApplyingVoucher}
-                        className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-primary-700 disabled:opacity-60"
+                        className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white cursor-pointer transition-all hover:bg-primary-700 disabled:opacity-60"
                       >
                         {isApplyingVoucher ? '...' : 'Apply'}
                       </button>
@@ -816,9 +796,9 @@ const CheckoutPage = () => {
               <div className="my-4 h-px" style={{ backgroundColor: 'var(--border-color)' }} />
 
               {/* Total */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between" style={{fontFamily:'Poppins'}}>
                 <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
-                  Total
+                 Grand Total
                 </span>
                 <div className="text-right">
                   {discount > 0 && (
@@ -826,7 +806,7 @@ const CheckoutPage = () => {
                       Rs. {(subtotal + deliveryFee).toLocaleString()}
                     </span>
                   )}
-                  <span className="text-xl font-extrabold text-primary-600">
+                  <span className="text-xl font-extrabold text-primary-600" style={{fontFamily:'Poppins'}}>
                     Rs. {total.toLocaleString()}
                   </span>
                 </div>
@@ -835,7 +815,7 @@ const CheckoutPage = () => {
               {/* You Save Message */}
               {discount > 0 && (
                 <div className="mt-2 rounded-lg bg-green-50 px-3 py-2 text-center">
-                  <p className="text-sm font-bold text-green-700">
+                  <p className="text-sm font-bold text-green-700" style={{fontFamily:'Poppins'}}>
                     🎉 You save Rs. {discount.toLocaleString()}!
                   </p>
                 </div>
@@ -850,18 +830,18 @@ const CheckoutPage = () => {
                 {isPlacingOrder ? (
                   <>
                     <div className="spinner h-5 w-5" />
-                    <span>Placing Order...</span>
+                    <span style={{fontFamily:'Poppins'}}>Placing Order...</span>
                   </>
                 ) : (
                   <>
-                    <span>Place Order</span>
-                    <span>— Rs. {total.toLocaleString()}</span>
+                    <span style={{fontFamily:'Poppins'}}>Place Order</span>
+                    <span style={{fontFamily:'Poppins'}}>— Rs. {total.toLocaleString()}</span>
                   </>
                 )}
               </button>
 
               {/* Payment Info */}
-              <p className="mt-3 text-center text-[10px]" style={{ color: 'var(--text-secondary)' }}>
+              <p className="mt-3 text-center text-[10px]" style={{ color: 'var(--text-secondary)', fontFamily:'Poppins' }}>
                 {form.payment_method === 'cod'
                   ? '💵 You will pay cash on delivery'
                   : '🔒 Secure payment via Safepay'}
