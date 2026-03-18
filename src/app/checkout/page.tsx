@@ -109,12 +109,12 @@ const CheckoutPage = () => {
 
   // Generate order number
   const generateOrderNumber = () => {
-    const prefix = 'NSP';
-    const timestamp = Date.now().toString().slice(-6);
-    const random = Math.floor(Math.random() * 1000)
-      .toString()
-      .padStart(3, '0');
-    return `${prefix}-${timestamp}-${random}`;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-';
+    let code = '';
+    for (let i = 0; i < 7; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
   };
 
   // Handle form change
@@ -366,7 +366,7 @@ const CheckoutPage = () => {
       setOrderNumber(newOrderNumber);
       setOrderPlaced(true);
       clearCart();
-      toast.success('Order placed successfully! 🎉');
+      toast.success('Order placed successfully!');
 
       setTimeout(() => {
         gsap.fromTo(
@@ -387,15 +387,15 @@ const CheckoutPage = () => {
   if (orderPlaced) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="success-container text-center">
-          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
-            <FiCheck size={48} className="text-green-600" />
+        <div className="success-container text-center" style={{fontFamily:'Poppins'}}>
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary-600">
+            <FiCheck size={48} className="text-white" />
           </div>
           <h1
             className="text-2xl font-bold sm:text-3xl"
             style={{ color: 'var(--text-primary)' }}
           >
-            Order Placed Successfully! 🎉
+            Order Placed Successfully!
           </h1>
           <p className="mt-2" style={{ color: 'var(--text-secondary)' }}>
             Thank you for ordering from NonStop Pizza
@@ -415,7 +415,8 @@ const CheckoutPage = () => {
               {orderNumber}
             </p>
             <p className="mt-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
-              Save this number to track your order
+              Save this number to track your order. <br></br>
+              Make sure to remember and copy your tracking number right on this page.
             </p>
           </div>
 

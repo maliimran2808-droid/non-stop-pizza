@@ -159,27 +159,21 @@ function TrackOrderContent() {
     <div className="min-h-screen pb-10">
       {/* Header */}
       <div
-        className="track-section border-b py-4"
-        style={{ borderColor: 'var(--border-color)' }}
+        className="track-section py-4"
+       
       >
-        <div className="container-custom flex items-center gap-4">
-          <button
-            onClick={() => router.push('/')}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-gray-100"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            <FiArrowLeft size={20} />
-          </button>
+        <div className="container-custom flex justify-center text-center items-center gap-4">
+      
           <div>
-            <h1
-              className="text-xl font-bold sm:text-2xl"
-              style={{ color: 'var(--text-primary)' }}
+             <h1
+              className="lg:text-[3rem] sm:text-2xl"
+              style={{ color: 'var(--text-primary)' , fontFamily:'Poppins'}}
             >
               Track Your Order
             </h1>
-            <p
+           <p
               className="text-xs sm:text-sm"
-              style={{ color: 'var(--text-secondary)' }}
+              style={{ color: 'var(--text-secondary)' , fontFamily:'Poppins'}}
             >
               Enter your order number to track status
             </p>
@@ -190,17 +184,15 @@ function TrackOrderContent() {
       <div className="container-custom mt-6">
         {/* Search Box */}
         <div
-          className="track-section mx-auto max-w-xl rounded-2xl p-5"
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-color)',
-          }}
+          className="track-section mx-auto max-w-xl rounded-2xl p-2"
+     
         >
-          <div className="flex gap-3">
+          <div className="flex gap-3" style={{fontFamily:'Poppins'}}>
             <input
               type="text"
               className="input-field flex-1 uppercase"
-              placeholder="Enter Order Number (e.g., NSP-123456-789)"
+              placeholder="Enter Order Number (e.g., 3ADXXXX)"
+          style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}}
               value={orderNumber}
               onChange={(e) => setOrderNumber(e.target.value.toUpperCase())}
               onKeyDown={(e) => e.key === 'Enter' && searchOrder()}
@@ -224,7 +216,7 @@ function TrackOrderContent() {
 
         {/* Order Not Found */}
         {searched && !order && !isSearching && (
-          <div className="mt-10 text-center">
+          <div className="mt-10 text-center" style={{fontFamily:'Poppins'}}>
             <span className="text-5xl">🔍</span>
             <h3
               className="mt-4 text-xl font-bold"
@@ -244,16 +236,17 @@ function TrackOrderContent() {
         {/* Order Found */}
         {order && (
           <div className="order-result mt-6">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="flex flex-col items-center justify-center gap-6">
               {/* LEFT - Status Timeline */}
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-2 w-full">
                 {/* Order Info Bar */}
           {/* Order Info Bar */}
 <div
-  className="flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4"
+  className="flex flex-wrap items-center justify-between gap-3 rounded-xl p-4"
   style={{
-    backgroundColor: 'var(--bg-card)',
+    backgroundColor: 'var(--checkout-page)',
     border: '1px solid var(--border-color)',
+    fontFamily:'Poppins',
   }}
 >
   <div>
@@ -320,62 +313,7 @@ function TrackOrderContent() {
     <span>Print</span>
   </button>
 </div>
-                  <div>
-                    <p
-                      className="text-xs"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Order Number
-                    </p>
-                    <p className="text-lg font-bold text-primary-600">
-                      {order.order_number}
-                    </p>
-                  </div>
-                  <div>
-                    <p
-                      className="text-xs"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Placed On
-                    </p>
-                    <p
-                      className="text-sm font-medium"
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {formatDate(order.created_at)}
-                    </p>
-                  </div>
-                  <div>
-                    <p
-                      className="text-xs"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Payment
-                    </p>
-                    <span
-                      className={`badge ${
-                        order.payment_status === 'paid'
-                          ? 'badge-green'
-                          : order.payment_status === 'failed'
-                          ? 'badge-red'
-                          : 'badge-yellow'
-                      }`}
-                    >
-                      {order.payment_status.toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <p
-                      className="text-xs"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Total
-                    </p>
-                    <p className="text-lg font-bold text-primary-600">
-                      Rs. {order.total.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
+                                 </div>
 
                 {/* Cancelled Order */}
                 {order.order_status === 'cancelled' && (
@@ -393,9 +331,10 @@ function TrackOrderContent() {
                 {/* Status Timeline */}
                 {order.order_status !== 'cancelled' && (
                   <div
-                    className="mt-4 rounded-2xl p-6"
+                    className="mt-4 w-full rounded-2xl p-6"
                     style={{
-                      backgroundColor: 'var(--bg-card)',
+                      backgroundColor: 'var(--checkout-page)',
+                      fontFamily:'Poppins',
                       border: '1px solid var(--border-color)',
                     }}
                   >
@@ -406,7 +345,7 @@ function TrackOrderContent() {
                       Order Status
                     </h3>
 
-                    <div className="space-y-0">
+                    <div className="space-y-0 flex justify-between tracking-situation lg:flex-row sm:flex-col">
                       {statusSteps.map((step, index) => {
                         const isCompleted = index < currentIndex;
                         const isActive = index === currentIndex;
@@ -441,20 +380,7 @@ function TrackOrderContent() {
                               </div>
 
                               {/* Line */}
-                              {index < statusSteps.length - 1 && (
-                                <div
-                                  className={`w-0.5 flex-1 min-h-[40px] ${
-                                    isCompleted
-                                      ? 'bg-green-500'
-                                      : ''
-                                  }`}
-                                  style={
-                                    !isCompleted
-                                      ? { backgroundColor: 'var(--border-color)' }
-                                      : {}
-                                  }
-                                />
-                              )}
+                        
                             </div>
 
                             {/* Content */}
@@ -493,12 +419,15 @@ function TrackOrderContent() {
                   </div>
                 )}
 
-                {/* Order Items */}
+              
+              </div>
+  {/* Order Items */}
                 <div
-                  className="mt-4 rounded-2xl p-5"
+                  className="mt-4 mb-4 rounded-2xl p-5"
                   style={{
-                    backgroundColor: 'var(--bg-card)',
+                    backgroundColor: 'var(--checkout-page)',
                     border: '1px solid var(--border-color)',
+                    fontFamily:'Poppins',
                   }}
                 >
                   <h3
@@ -557,15 +486,14 @@ function TrackOrderContent() {
                     </div>
                   ))}
                 </div>
-              </div>
-
               {/* RIGHT - Delivery Details */}
               <div className="lg:col-span-1">
                 <div
                   className="rounded-2xl p-5"
                   style={{
-                    backgroundColor: 'var(--bg-card)',
+                    backgroundColor: 'var(--checkout-page)',
                     border: '1px solid var(--border-color)',
+                    fontFamily:'Poppins',
                   }}
                 >
                   <h3
@@ -699,11 +627,11 @@ function TrackOrderContent() {
                   </div>
 
                   {/* Payment Method */}
-                  <div className="mt-4 flex items-center gap-2 rounded-xl bg-primary-50 p-3">
-                    <span className="text-lg">
+                  <div className="mt-4 flex items-center gap-2 rounded-xl bg-primary-600 p-3">
+                    <span className="text-lg text-white">
                       {order.payment_method === 'cod' ? '💵' : '💳'}
                     </span>
-                    <span className="text-sm font-medium text-primary-700">
+                    <span className="text-sm font-medium text-white">
                       {order.payment_method === 'cod'
                         ? 'Cash on Delivery'
                         : 'Card Payment'}
