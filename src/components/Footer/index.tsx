@@ -1,21 +1,24 @@
 'use client';
-import { usePathname } from 'next/navigation';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase-client';
+import { useThemeStore } from '@/store/themeStore';
 import {
   FiPhone,
   FiMail,
   FiMapPin,
-  FiClock,
   FiArrowUp,
-  FiInstagram,
-  FiFacebook,
+  FiChevronDown,
 } from 'react-icons/fi';
+import { FaFacebookF, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 
 const Footer = () => {
-     const pathname = usePathname();
+  const pathname = usePathname();
+  const { theme } = useThemeStore();
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [settings, setSettings] = useState({
     restaurant_name: 'NonStop Pizza',
     restaurant_phone: '+92-XXX-XXXXXXX',
@@ -23,9 +26,8 @@ const Footer = () => {
     delivery_time: '30-45 mins',
   });
 
-  // Fetch s  // Hide footer on admin pages
-
-    useEffect(() => {
+  // Fetch settings
+  useEffect(() => {
     const fetchSettings = async () => {
       try {
         const { data } = await supabase.from('site_settings').select('*');
@@ -49,7 +51,7 @@ const Footer = () => {
     fetchSettings();
   }, []);
 
-  // Show/hide back to top button
+  // Show/hide back to top
   useEffect(() => {
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 500);
@@ -59,13 +61,14 @@ const Footer = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Scroll to top
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const currentYear = new Date().getFullYear();
- if (pathname.startsWith('/admin')) return null;
+
+  if (pathname.startsWith('/admin')) return null;
+
   return (
     <>
       <footer
@@ -74,75 +77,137 @@ const Footer = () => {
           borderTop: '1px solid var(--border-color)',
         }}
       >
-        {/* Main Footer */}
-        <div className="container-custom py-10 sm:py-14">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Column 1 - Brand */}
-            <div>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600">
-                  <svg
-                    viewBox="0 0 100 100"
-                    className="h-6 w-6"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M50 10 L85 80 Q50 95 15 80 Z"
-                      fill="#FACC15"
-                      stroke="#EAB308"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M15 80 Q50 95 85 80"
-                      fill="#D97706"
-                      stroke="#B45309"
-                      strokeWidth="2"
-                    />
-                    <circle cx="45" cy="45" r="6" fill="#DC2626" />
-                    <circle cx="60" cy="55" r="5" fill="#DC2626" />
-                    <circle cx="38" cy="65" r="5.5" fill="#DC2626" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-extrabold text-primary-600">
-                    NONSTOP
-                  </h3>
-                  <p
-                    className="text-[10px] font-bold tracking-widest"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    PIZZA
-                  </p>
-                </div>
-              </div>
+        {/* Logo + About Section */}
+        <div className="container-custom pt-10 sm:pt-14">
+          {/* Centered Logo */}
+          <div className="flex justify-center">
+            <div className="h-20 w-20 overflow-hidden rounded-full sm:h-24 sm:w-24">
+              <img
+                src={theme === 'dark' ? '/logo-dark.png' : '/logo-light.png'}
+                alt={settings.restaurant_name}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Restaurant Name */}
+          <h3
+            className="mt-4 text-center text-xl font-extrabold tracking-wide sm:text-2xl"
+            style={{ color: 'var(--text-primary)', fontFamily: 'Gotham', fontWeight: 700 }}
+          >
+            {settings.restaurant_name}
+          </h3>
+
+          {/* About Paragraph */}
+          <div className="mx-auto mt-4 max-w-2xl text-center">
+            <p
+              className="text-sm leading-relaxed sm:text-base"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Welcome to {settings.restaurant_name}! We are passionate about serving you the freshest, most delicious pizza and fast food in town. Our commitment is to deliver hot and tasty meals right to your doorstep, ensuring every bite is a memorable experience.
+            </p>
+
+            {/* Expandable Content */}
+            <div
+              className="overflow-hidden transition-all duration-500"
+              style={{
+                maxHeight: isExpanded ? '500px' : '0px',
+                opacity: isExpanded ? 1 : 0,
+              }}
+            >
               <p
-                className="mt-3 text-sm leading-relaxed"
+                className="mt-4 text-sm leading-relaxed sm:text-base"
                 style={{ color: 'var(--text-secondary)' }}
               >
-                Fresh & hot pizza delivered to your doorstep. We never stop
-                making delicious food for you! 🍕
+                From our classic hand-tossed pizzas to our signature burgers, every item on our menu is crafted with the finest ingredients and prepared with love. We take pride in our fast delivery service, ensuring your food arrives fresh and hot.
               </p>
-
-              {/* Social Links */}
-              <div className="mt-4 flex gap-3">
-                <a
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
-                >
-                  <FiFacebook size={16} />
-                </a>
-                <a
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
-                >
-                  <FiInstagram size={16} />
-                </a>
-              </div>
+              <p
+                className="mt-4 text-sm leading-relaxed sm:text-base"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Whether you&apos;re having a family dinner, a party with friends, or simply craving a midnight snack — {settings.restaurant_name} is here for you. We never stop serving because your satisfaction is our top priority. Order now and taste the difference!
+              </p>
             </div>
 
-            {/* Column 2 - Quick Links */}
-            <div>
+            {/* Read More / Read Less Button */}
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 transition-all hover:text-primary-700"
+            >
+              <span>{isExpanded ? 'Read Less' : 'Read More'}</span>
+              <FiChevronDown
+                size={14}
+                className={`transition-transform duration-300 ${
+                  isExpanded ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Separator Line — 70% centered */}
+          <div className="mt-8 flex justify-center">
+            <div
+              className="h-px w-[70%]"
+              style={{ backgroundColor: 'var(--border-color)' }}
+            />
+          </div>
+        </div>
+
+        {/* Three Boxes Section */}
+        <div className="container-custom py-8 sm:py-10">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+            {/* Box 1 — Contact */}
+            <div className="text-center sm:text-left">
+              <h4
+                className="mb-4 text-sm font-bold uppercase tracking-wider"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                Contact Us
+              </h4>
+              <ul className="space-y-3">
+                <li className="flex items-start justify-center gap-2 sm:justify-start">
+                  <FiPhone
+                    size={14}
+                    className="mt-0.5 flex-shrink-0 text-primary-600"
+                  />
+                  <a
+                    href={`tel:${settings.restaurant_phone}`}
+                    className="text-sm transition-all hover:text-primary-600"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {settings.restaurant_phone}
+                  </a>
+                </li>
+                <li className="flex items-start justify-center gap-2 sm:justify-start">
+                  <FiMail
+                    size={14}
+                    className="mt-0.5 flex-shrink-0 text-primary-600"
+                  />
+                  <a
+                    href={`mailto:${settings.restaurant_email}`}
+                    className="text-sm transition-all hover:text-primary-600"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {settings.restaurant_email}
+                  </a>
+                </li>
+                <li className="flex items-start justify-center gap-2 sm:justify-start">
+                  <FiMapPin
+                    size={14}
+                    className="mt-0.5 flex-shrink-0 text-primary-600"
+                  />
+                  <span
+                    className="text-sm"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    Your City, Pakistan
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Box 2 — Quick Links */}
+            <div className="text-center">
               <h4
                 className="mb-4 text-sm font-bold uppercase tracking-wider"
                 style={{ color: 'var(--text-primary)' }}
@@ -156,7 +221,7 @@ const Footer = () => {
                   { href: '/complaint', label: 'Submit Complaint' },
                   { href: '/checkout', label: 'Cart / Checkout' },
                   { href: '/privacy-policy', label: 'Privacy Policy' },
-                    { href: '/faqs', label: 'FAQs' },
+                  { href: '/faqs', label: 'FAQs' },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
@@ -171,126 +236,46 @@ const Footer = () => {
               </ul>
             </div>
 
-            {/* Column 3 - Contact Info */}
-            <div>
+            {/* Box 3 — Follow Us */}
+            <div className="text-center sm:text-right">
               <h4
                 className="mb-4 text-sm font-bold uppercase tracking-wider"
                 style={{ color: 'var(--text-primary)' }}
               >
-                Contact Us
+                Follow Us
               </h4>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <FiPhone
-                    size={14}
-                    className="mt-0.5 flex-shrink-0 text-primary-600"
-                  />
-                  <a
-                    href={`tel:${settings.restaurant_phone}`}
-                    className="text-sm transition-all hover:text-primary-600"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    {settings.restaurant_phone}
-                  </a>
-                </li>
-                <li className="flex items-start gap-2">
-                  <FiMail
-                    size={14}
-                    className="mt-0.5 flex-shrink-0 text-primary-600"
-                  />
-                  <a
-                    href={`mailto:${settings.restaurant_email}`}
-                    className="text-sm transition-all hover:text-primary-600"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    {settings.restaurant_email}
-                  </a>
-                </li>
-                <li className="flex items-start gap-2">
-                  <FiClock
-                    size={14}
-                    className="mt-0.5 flex-shrink-0 text-primary-600"
-                  />
-                  <span
-                    className="text-sm"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    Delivery: {settings.delivery_time}
-                  </span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 4 - Opening Hours */}
-            <div>
-              <h4
-                className="mb-4 text-sm font-bold uppercase tracking-wider"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Opening Hours
-              </h4>
-              <ul className="space-y-2">
-                <li className="flex justify-between text-sm">
-                  <span style={{ color: 'var(--text-secondary)' }}>
-                    Monday - Friday
-                  </span>
-                  <span
-                    className="font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    11:00 - 23:00
-                  </span>
-                </li>
-                <li className="flex justify-between text-sm">
-                  <span style={{ color: 'var(--text-secondary)' }}>
-                    Saturday
-                  </span>
-                  <span
-                    className="font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    11:00 - 00:00
-                  </span>
-                </li>
-                <li className="flex justify-between text-sm">
-                  <span style={{ color: 'var(--text-secondary)' }}>
-                    Sunday
-                  </span>
-                  <span
-                    className="font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    12:00 - 23:00
-                  </span>
-                </li>
-              </ul>
-
-              {/* Payment Methods */}
-              <div className="mt-4">
-                <p
-                  className="mb-2 text-xs font-medium"
-                  style={{ color: 'var(--text-secondary)' }}
+              <div className="flex items-center justify-center gap-3 sm:justify-end">
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
                 >
-                  We Accept
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {['💵 COD', '💳 Visa', '💳 Master', '💳 UnionPay', '💳 PayPak'].map(
-                    (method) => (
-                      <span
-                        key={method}
-                        className="rounded-md px-2 py-1 text-[10px] font-medium"
-                        style={{
-                          backgroundColor: 'var(--bg-primary)',
-                          color: 'var(--text-secondary)',
-                          border: '1px solid var(--border-color)',
-                        }}
-                      >
-                        {method}
-                      </span>
-                    )
-                  )}
-                </div>
+                  <FaFacebookF size={16} />
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
+                >
+                  <FaInstagram size={16} />
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
+                >
+                  <FaWhatsapp size={18} />
+                </a>
               </div>
+              <p
+                className="mt-4 text-xs"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Stay connected with us for the latest deals and offers!
+              </p>
             </div>
           </div>
         </div>
@@ -301,19 +286,39 @@ const Footer = () => {
             borderTop: '1px solid var(--border-color)',
           }}
         >
-          <div className="container-custom flex flex-col items-center justify-between gap-2 py-4 sm:flex-row">
+          <div className="container-custom flex flex-col items-center justify-between gap-3 py-4 sm:flex-row">
+            {/* Powered By */}
             <p
               className="text-xs"
               style={{ color: 'var(--text-secondary)' }}
             >
-              © {currentYear} {settings.restaurant_name}. All rights reserved.
+              © {currentYear} Powered by{' '}
+              <span className="font-semibold text-primary-600">
+                {settings.restaurant_name}
+              </span>
             </p>
-            <p
-              className="text-xs"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              Made with ❤️ & 🍕
-            </p>
+
+            {/* Bottom Links */}
+            <div className="flex items-center gap-4">
+              <Link
+                href="/privacy-policy"
+                className="text-xs transition-all hover:text-primary-600"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Privacy Policy
+              </Link>
+              <div
+                className="h-3 w-px"
+                style={{ backgroundColor: 'var(--border-color)' }}
+              />
+              <Link
+                href="/faqs"
+                className="text-xs transition-all hover:text-primary-600"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                FAQs
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
