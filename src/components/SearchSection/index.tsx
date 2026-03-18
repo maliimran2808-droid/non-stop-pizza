@@ -149,7 +149,7 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
               <button
                 onClick={clearSearch}
                 className="flex items-center pr-5 transition-colors hover:text-primary-600"
-                style={{ color: 'var(--text-secondary)' }}
+                style={{ color: 'var(--text-secondary)', fontFamily:'Poppins' }}
               >
                 <FiX size={20} />
               </button>
@@ -171,7 +171,7 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
                   {results.map((product) => (
                     <div
                       key={product.id}
-                      className="search-result-item flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all duration-200 hover:bg-primary-50"
+                      className="search-result-item flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-all duration-200"
                       style={{ color: 'var(--text-primary)' }}
                       onClick={() => handleProductClick(product)}
                     >
@@ -190,13 +190,13 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
 
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <h4 className="truncate text-sm font-semibold sm:text-base">
+                        <h4 className="truncate text-sm" style={{fontFamily:'Salmond'}}>
                           {product.name}
                         </h4>
                         {product.category && (
                           <p
                             className="text-xs"
-                            style={{ color: 'var(--text-secondary)' }}
+                            style={{ color: 'var(--text-secondary)', fontFamily:'Poppins' }}
                           >
                             {(product.category as unknown as { name: string }).name}
                           </p>
@@ -204,7 +204,7 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
                         {product.variants && product.variants.length > 0 && (
                           <p
                             className="text-[10px]"
-                            style={{ color: 'var(--text-secondary)' }}
+                            style={{ color: 'var(--text-secondary)', fontFamily:'Poppins' }}
                           >
                             {product.variants.length} size(s) available
                           </p>
@@ -213,7 +213,7 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
 
                       {/* Price */}
                       <div className="flex-shrink-0">
-                        <span className="text-sm font-bold text-primary-600 sm:text-base">
+                        <span className="text-sm text-primary-600 sm:text-base" style={{fontFamily:'Salmond'}}>
                           Rs. {product.base_price}
                         </span>
                       </div>
@@ -225,13 +225,13 @@ const SearchSection = ({ onProductClick }: SearchSectionProps) => {
                   <span className="text-4xl">😕</span>
                   <p
                     className="mt-2 text-sm font-medium"
-                    style={{ color: 'var(--text-secondary)' }}
+                    style={{ color: 'var(--text-secondary)', fontFamily:'Poppins' }}
                   >
                     No items found for &quot;{query}&quot;
                   </p>
                   <p
                     className="mt-1 text-xs"
-                    style={{ color: 'var(--text-secondary)' }}
+                    style={{ color: 'var(--text-secondary)' , fontFamily:'Poppins'}}
                   >
                     Try searching with different keywords
                   </p>

@@ -459,7 +459,7 @@ const BottomCartBar = () => {
                     {suggestions.map((sug) => (
                       <div
                         key={sug.id}
-                        className="flex min-w-[130px] flex-shrink-0 flex-col overflow-hidden rounded-xl"
+                        className="flex max-w-[130px] flex-shrink-0 flex-col overflow-hidden rounded-xl"
                         style={{
                           backgroundColor: 'transparent',
                           position:'relative'
@@ -472,7 +472,7 @@ const BottomCartBar = () => {
                             <img
                               src={sug.image_url}
                               alt={sug.name}
-                              className="h-full relative w-full rounded-[20px] object-cover"
+                              className="h-auto relative w-full rounded-[20px] object-contain"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
