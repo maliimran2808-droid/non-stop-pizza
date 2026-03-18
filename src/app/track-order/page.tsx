@@ -408,7 +408,7 @@ function TrackOrderContent() {
                                 {isCompleted
                                   ? '✓ Completed'
                                   : isActive
-                                  ? '⏳ In Progress...'
+                                  ? 'Your order has been delivered ✅...'
                                   : 'Pending'}
                               </p>
                             </div>
