@@ -51,55 +51,23 @@ const LoadingScreen = () => {
       {/* Logo Container */}
       <div className="loading-logo relative z-10 flex flex-col items-center gap-4">
         {/* Pizza Logo SVG */}
-        <div className="flex h-32 w-32 items-center justify-center rounded-full bg-primary-600 shadow-2xl sm:h-40 sm:w-40">
-          <svg
-            viewBox="0 0 100 100"
-            className="h-20 w-20 sm:h-24 sm:w-24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Pizza Slice Shape */}
-            <path
-              d="M50 10 L85 80 Q50 95 15 80 Z"
-              fill="#FACC15"
-              stroke="#EAB308"
-              strokeWidth="2"
-            />
-            {/* Crust */}
-            <path
-              d="M15 80 Q50 95 85 80"
-              fill="#D97706"
-              stroke="#B45309"
-              strokeWidth="2"
-            />
-            {/* Pepperoni */}
-            <circle cx="45" cy="45" r="6" fill="#DC2626" />
-            <circle cx="60" cy="55" r="5" fill="#DC2626" />
-            <circle cx="38" cy="65" r="5.5" fill="#DC2626" />
-            <circle cx="55" cy="72" r="4.5" fill="#DC2626" />
-            {/* Cheese dots */}
-            <circle cx="50" cy="58" r="2" fill="#FDE68A" />
-            <circle cx="42" cy="52" r="1.5" fill="#FDE68A" />
-            <circle cx="62" cy="68" r="1.5" fill="#FDE68A" />
-          </svg>
+        <div className="flex h-auto w-32 items-center justify-center">
+        <img src= '/logo2.webp'/>
         </div>
 
         {/* Restaurant Name */}
-        <div className="text-center">
-          <h1 className="text-3xl font-extrabold tracking-wider text-white sm:text-4xl">
-            NONSTOP
-          </h1>
-          <h2 className="text-xl font-bold tracking-widest text-primary-400 sm:text-2xl">
-            PIZZA
-          </h2>
-        </div>
-
-        {/* Loading Dots */}
-        <div className="flex items-center gap-2">
+        <div className="text-center" style={{fontFamily:'Poppins'}}>
+       <div className="flex items-center gap-2">
           <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '0ms' }} />
           <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '150ms' }} />
           <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '300ms' }} />
         </div>
+       
+          
+        </div>
+
+        {/* Loading Dots */}
+        
       </div>
     </div>
   );
