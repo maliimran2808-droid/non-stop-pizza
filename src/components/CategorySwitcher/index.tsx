@@ -97,7 +97,7 @@ const CategorySwitcher = ({
                     />
                   </div>
                 )} */}
-                <span style={{fontFamily:'Gotham', fontWeight:'bold', fontSize:'.9rem', letterSpacing:'0px'}}>{category.name}</span>
+                <span className='cursor-pointer' style={{fontFamily:'Gotham', fontWeight:'bold', fontSize:'.9rem', letterSpacing:'0px'}}>{category.name}</span>
               </button>
             );
           })}

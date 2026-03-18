@@ -15,6 +15,13 @@ import {
   FiPhone,
   FiAlertCircle,
 } from 'react-icons/fi';
+import {AiFillHome} from "react-icons/ai"
+import { MdLocalPhone , MdPrivacyTip} from "react-icons/md";
+import { IoIosAlert } from "react-icons/io";
+import { FaTruckFront , FaCartShopping} from "react-icons/fa6";
+import { FaQuestionCircle } from "react-icons/fa";
+
+
 
 const Header = () => {
     const pathname = usePathname();
@@ -151,7 +158,7 @@ if (pathname.startsWith('/admin')) return null;
               <button
                 onClick={toggleTheme}
                 className="flex h-auto w-auto items-center justify-center rounded-full transition-all duration-300 hover:bg-primary-600 sm:h-10 sm:w-10"
-                style={{ color: 'var(--text-primary)', transform:'translateX(-10px)'}}
+                style={{ color: 'var(--text-primary)', transform:'translateX(-0px)'}}
                 aria-label="Toggle Theme"
               >
                 {theme === 'light' ? (
@@ -163,7 +170,7 @@ if (pathname.startsWith('/admin')) return null;
               {/* Mobile Menu Button */}
               <button
                 onClick={toggleMobileMenu}
-                className="flex h-9 w-9 items-center justify-center rounded-full transition-all duration-300 hover:bg-primary-100 md:hidden"
+                className="flex h-auto w-9 items-center justify-center rounded-full transition-all duration-300 cursor-pointer md:hidden"
                 style={{ color: 'var(--text-primary)' }}
                 aria-label="Menu"
               >
@@ -186,15 +193,15 @@ if (pathname.startsWith('/admin')) return null;
           {/* Mobile Menu Panel */}
           <div
             className="mobile-menu fixed top-0 right-0 z-50 h-full w-72 shadow-2xl sm:w-80"
-            style={{ backgroundColor: 'var(--bg-primary)' }}
+            style={{ backgroundColor: '#dc2828', fontFamily:'Poppins'}}
           >
             {/* Close Button */}
-            <div className="flex h-16 items-center justify-between px-6 sm:h-20">
-              <span className="text-lg font-bold text-primary-600">Menu</span>
+            <div className="flex h-16 items-center justify-between text-white px-6 sm:h-20">
+              <span className="text-lg" style={{ fontFamily:'Poppins'}}>Menu</span>
               <button
                 onClick={toggleMobileMenu}
-                className="flex h-auto w-9 items-center justify-center rounded-full transition-all hover:bg-primary-100"
-                style={{ color: 'var(--text-primary)' }}
+                className="flex h-9 w-9 items-center cursor-pointer justify-center rounded-full transition-all hover:bg-[#000]"
+                style={{ color: 'white'}}
               >
                 <FiX size={22} />
               </button>
@@ -203,7 +210,7 @@ if (pathname.startsWith('/admin')) return null;
             {/* Divider */}
             <div
               className="mx-6 h-px"
-              style={{ backgroundColor: 'var(--border-color)' }}
+              
             />
 
             {/* Menu Items */}
@@ -211,67 +218,68 @@ if (pathname.startsWith('/admin')) return null;
               <Link
                 href="/"
                 onClick={toggleMobileMenu}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
-                <span className="text-xl">🍕</span>
+                <AiFillHome size={20} />
                 <span>Home</span>
               </Link>
 
               <Link
                 href="tel:+920000000000"
                 onClick={toggleMobileMenu}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
-                <FiPhone size={18} className="text-primary-600" />
+                <MdLocalPhone size={20}/>
                 <span>Contact Us</span>
               </Link>
 
               <Link
                 href="/complaint"
                 onClick={toggleMobileMenu}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
-                <FiAlertCircle size={18} className="text-primary-600" />
+                <IoIosAlert size={20}/>
                 <span>Submit Complaint</span>
               </Link>
 
               <Link
                 href="/track-order"
                 onClick={toggleMobileMenu}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
-                <span className="text-xl">📦</span>
+                <FaTruckFront size={20}/>
+
                 <span>Track Order</span>
               </Link>
                       <Link
                 href="/privacy-policy"
                 onClick={toggleMobileMenu}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
-                <span className="text-xl">🛡️</span>
+                <MdPrivacyTip size={20}/>
                 <span>Privacy Policy</span>
               </Link>
                             <Link
                 href="/faqs"
                 onClick={toggleMobileMenu}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
-                <span className="text-xl">❓</span>
+               <FaQuestionCircle size={20}/>
                 <span>FAQs</span>
               </Link>
               <Link
                 href="/checkout"
                 onClick={toggleMobileMenu}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
-                <FiShoppingCart size={18} className="text-primary-600" />
+                <FaCartShopping size={20}/>
                 <span>Cart ({totalItems})</span>
               </Link>
 
@@ -286,12 +294,12 @@ if (pathname.startsWith('/admin')) return null;
                 onClick={() => {
                   toggleTheme();
                 }}
-                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
-                style={{ color: 'var(--text-primary)' }}
+                className="mobile-menu-item flex items-center gap-3 cursor-pointer rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-[#000]"
+                style={{ color: 'white' }}
               >
                 {theme === 'light' ? (
                   <>
-                    <FiMoon size={18} className="text-primary-600" />
+                    <FiMoon size={18} className="text-white" />
                     <span>Dark Mode</span>
                   </>
                 ) : (
