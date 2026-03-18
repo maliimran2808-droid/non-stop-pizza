@@ -585,6 +585,9 @@ body {
 .checkout-section{
   padding: 20px !important;
 }
+.sec-chcek {
+  margin-top: 0px !important;
+}
 }
 
 .crt-sze_txt{
