@@ -73,39 +73,36 @@ const Footer = () => {
     <>
       <footer
         style={{
-          backgroundColor: 'var(--bg-card)',
-          borderTop: '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-primary)',
+        
         }}
       >
         {/* Logo + About Section */}
         <div className="container-custom pt-10 sm:pt-14">
           {/* Centered Logo */}
           <div className="flex justify-center">
-            <div className="h-20 w-20 overflow-hidden rounded-full sm:h-24 sm:w-24">
-              <img
-                src={theme === 'dark' ? '/logo-dark.png' : '/logo-light.png'}
-                alt={settings.restaurant_name}
-                className="h-full w-full object-cover"
-              />
-            </div>
+            <div className="flex h-auto logo-img2 w-auto items-center justify-center">
+                  <img src={theme === 'dark' ? '/logo2.webp' : '/Logo.webp'}/>
+                  
+                </div>
           </div>
 
           {/* Restaurant Name */}
           <h3
-            className="mt-4 text-center text-xl font-extrabold tracking-wide sm:text-2xl"
-            style={{ color: 'var(--text-primary)', fontFamily: 'Gotham', fontWeight: 700 }}
+            className="mt-4 w-[70%] mx-auto text-center lg:text-[1.7rem] sm:text-3xl"
+            style={{ color: 'var(--text-primary)', fontFamily: 'Salmond'}}
           >
-            {settings.restaurant_name}
+           Kababjees Fried Chicken – Redefining the fast-food experience with its exceptional fried chicken
           </h3>
 
           {/* About Paragraph */}
-          <div className="mx-auto mt-4 max-w-2xl text-center">
-            <p
-              className="text-sm leading-relaxed sm:text-base"
-              style={{ color: 'var(--text-secondary)' }}
+          <div className="mx-auto mt-2 max-w-2xl sm:max-w-[70%] text-center">
+            <span
+              className="text-[.9rem]"
+              style={{ color: 'var(--text-primary)', fontFamily:'Poppins', fontWeight:'400' }}
             >
               Welcome to {settings.restaurant_name}! We are passionate about serving you the freshest, most delicious pizza and fast food in town. Our commitment is to deliver hot and tasty meals right to your doorstep, ensuring every bite is a memorable experience.
-            </p>
+            </span>
 
             {/* Expandable Content */}
             <div
@@ -116,14 +113,14 @@ const Footer = () => {
               }}
             >
               <p
-                className="mt-4 text-sm leading-relaxed sm:text-base"
-                style={{ color: 'var(--text-secondary)' }}
+                className="mt-4 text-sm"
+               style={{ color: 'var(--text-primary)', fontFamily: 'Poppins'}}
               >
                 From our classic hand-tossed pizzas to our signature burgers, every item on our menu is crafted with the finest ingredients and prepared with love. We take pride in our fast delivery service, ensuring your food arrives fresh and hot.
               </p>
               <p
-                className="mt-4 text-sm leading-relaxed sm:text-base"
-                style={{ color: 'var(--text-secondary)' }}
+                className="mt-4 text-sm"
+              style={{ color: 'var(--text-primary)', fontFamily: 'Poppins'}}
               >
                 Whether you&apos;re having a family dinner, a party with friends, or simply craving a midnight snack — {settings.restaurant_name} is here for you. We never stop serving because your satisfaction is our top priority. Order now and taste the difference!
               </p>
@@ -132,7 +129,7 @@ const Footer = () => {
             {/* Read More / Read Less Button */}
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-600 transition-all hover:text-primary-700"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-semibold cursor-pointer text-primary-600 transition-all"
             >
               <span>{isExpanded ? 'Read Less' : 'Read More'}</span>
               <FiChevronDown
@@ -147,24 +144,24 @@ const Footer = () => {
           {/* Separator Line — 70% centered */}
           <div className="mt-8 flex justify-center">
             <div
-              className="h-px w-[70%]"
-              style={{ backgroundColor: 'var(--border-color)' }}
+              className="h-[2px] min-w-[50%]"
+              style={{ backgroundColor: 'var(--product-description)', borderRadius:'10px' }}
             />
           </div>
         </div>
 
         {/* Three Boxes Section */}
-        <div className="container-custom py-8 sm:py-10">
+        <div className="container-custom py-8 pb-2" style={{maxWidth:'70vw'}}>
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             {/* Box 1 — Contact */}
             <div className="text-center sm:text-left">
               <h4
-                className="mb-4 text-sm font-bold uppercase tracking-wider"
-                style={{ color: 'var(--text-primary)' }}
+                className="mb-4 lg:text-xl sm:text-sm"
+                style={{ color: 'var(--text-primary)', fontFamily:'Raleway' }}
               >
                 Contact Us
               </h4>
-              <ul className="space-y-3">
+              <ul className="space-y-3" style={{fontFamily:'Raleway', fontWeight:'400'}}>
                 <li className="flex items-start justify-center gap-2 sm:justify-start">
                   <FiPhone
                     size={14}
@@ -172,7 +169,7 @@ const Footer = () => {
                   />
                   <a
                     href={`tel:${settings.restaurant_phone}`}
-                    className="text-sm transition-all hover:text-primary-600"
+                    className="text-sm transition-all"
                     style={{ color: 'var(--text-secondary)' }}
                   >
                     {settings.restaurant_phone}
@@ -185,7 +182,7 @@ const Footer = () => {
                   />
                   <a
                     href={`mailto:${settings.restaurant_email}`}
-                    className="text-sm transition-all hover:text-primary-600"
+                    className="text-sm transition-all"
                     style={{ color: 'var(--text-secondary)' }}
                   >
                     {settings.restaurant_email}
@@ -200,7 +197,7 @@ const Footer = () => {
                     className="text-sm"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    Your City, Pakistan
+                    NonStop Pizza, Nonarian Chownk, Near Prima Medical Store, New Shalimar Road, Samnabad.
                   </span>
                 </li>
               </ul>
@@ -209,12 +206,12 @@ const Footer = () => {
             {/* Box 2 — Quick Links */}
             <div className="text-center">
               <h4
-                className="mb-4 text-sm font-bold uppercase tracking-wider"
-                style={{ color: 'var(--text-primary)' }}
+                className="mb-4 lg:text-xl sm:text-sm"
+                style={{ color: 'var(--text-primary)', fontFamily:'Raleway'}}
               >
                 Quick Links
               </h4>
-              <ul className="space-y-2.5">
+              <ul className="space-y-2.5" style={{fontFamily:'Raleway', fontWeight:'400'}}>
                 {[
                   { href: '/', label: 'Menu' },
                   { href: '/track-order', label: 'Track Order' },
@@ -239,40 +236,40 @@ const Footer = () => {
             {/* Box 3 — Follow Us */}
             <div className="text-center sm:text-right">
               <h4
-                className="mb-4 text-sm font-bold uppercase tracking-wider"
-                style={{ color: 'var(--text-primary)' }}
+                className="mb-4 lg:text-xl sm:text-sm"
+                style={{ color: 'var(--text-primary)', fontFamily:'Raleway' }}
               >
                 Follow Us
               </h4>
-              <div className="flex items-center justify-center gap-3 sm:justify-end">
+              <div className="flex items-center justify-center gap-1 sm:justify-end" style={{fontFamily:'Raleway', fontWeight:'400'}}>
                 <a
                   href="#"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
+                  className="flex h-8 w-9 items-center justify-center rounded-full text-primary transition-all"
                 >
-                  <FaFacebookF size={16} />
+                  <FaFacebookF size={17} />
                 </a>
                 <a
                   href="#"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
+                  className="flex h-8 w-8 items-center justify-center rounded-full  text-primary transition-all"
                 >
-                  <FaInstagram size={16} />
+                  <FaInstagram size={17} />
                 </a>
                 <a
                   href="#"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-primary transition-all"
                 >
-                  <FaWhatsapp size={18} />
+                  <FaWhatsapp size={19} />
                 </a>
               </div>
               <p
                 className="mt-4 text-xs"
-                style={{ color: 'var(--text-secondary)' }}
+                style={{ color: 'var(--text-secondary)', fontFamily:'Raleway' }}
               >
                 Stay connected with us for the latest deals and offers!
               </p>
@@ -282,39 +279,37 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div
-          style={{
-            borderTop: '1px solid var(--border-color)',
-          }}
+        
         >
-          <div className="container-custom flex flex-col items-center justify-between gap-3 py-4 sm:flex-row">
+          <div className="container-custom flex flex-col items-center justify-center gap-3 py-4 lg:pb-[35px] sm:flex-row">
             {/* Powered By */}
             <p
-              className="text-xs"
-              style={{ color: 'var(--text-secondary)' }}
+              className="text-[.8rem]"
+              style={{ color: 'var(--text-primary)', fontFamily:'Poppins' }}
             >
-              © {currentYear} Powered by{' '}
-              <span className="font-semibold text-primary-600">
+              © {currentYear} Powered by&nbsp;{' '}
+              <span className="text-primary-600">
                 {settings.restaurant_name}
               </span>
             </p>
 
             {/* Bottom Links */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <Link
                 href="/privacy-policy"
-                className="text-xs transition-all hover:text-primary-600"
-                style={{ color: 'var(--text-secondary)' }}
+                className="text-[.8rem] transition-all underline"
+                style={{ color: 'var(--text-primary)' }}
               >
                 Privacy Policy
               </Link>
               <div
                 className="h-3 w-px"
-                style={{ backgroundColor: 'var(--border-color)' }}
+                style={{ backgroundColor: 'var(--text-primary)' }}
               />
               <Link
                 href="/faqs"
-                className="text-xs transition-all hover:text-primary-600"
-                style={{ color: 'var(--text-secondary)' }}
+                className="text-[.8rem] transition-all underline"
+                style={{ color: 'var(--text-primary)' }}
               >
                 FAQs
               </Link>
