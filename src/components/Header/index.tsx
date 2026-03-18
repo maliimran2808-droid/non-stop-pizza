@@ -247,7 +247,15 @@ if (pathname.startsWith('/admin')) return null;
                 <span className="text-xl">📦</span>
                 <span>Track Order</span>
               </Link>
-
+                      <Link
+                href="/privacy-policy"
+                onClick={toggleMobileMenu}
+                className="mobile-menu-item flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all hover:bg-primary-50"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <span className="text-xl">🛡️</span>
+                <span>Privacy Policy</span>
+              </Link>
               <Link
                 href="/checkout"
                 onClick={toggleMobileMenu}
