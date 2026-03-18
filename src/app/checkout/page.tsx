@@ -470,7 +470,7 @@ const CheckoutPage = () => {
       
 
       <div className="container-custom mt-6">
-        <div className="grid grid-cols-1 max-w-[80vw] mx-auto gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 checkoutBox max-w-[80vw] mx-auto gap-6 lg:grid-cols-3">
           {/* LEFT - Form */}
           <div className="lg:col-span-2">
             {/* Order Items */}
