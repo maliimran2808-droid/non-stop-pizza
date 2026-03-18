@@ -177,8 +177,8 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
     };
 
     addToCart(product, finalVariant, quantity, instructions);
-    toast.success(`${product.name} added to cart! 🍕`, {
-      icon: '🛒',
+    toast.success(`${product.name} added to cart!`, {
+      icon: '✅',
     });
     handleClose();
   };

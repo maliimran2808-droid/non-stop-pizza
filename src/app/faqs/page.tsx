@@ -96,46 +96,39 @@ const FAQsPage = () => {
   }
 
   return (
-    <div className="min-h-screen pb-10">
+    <div className="" style={{width:'85.5vw', fontFamily:'Poppins', margin:'20px auto 0px auto'}}>
       {/* Header */}
-      <div
-        className="border-b py-4"
-        style={{ borderColor: 'var(--border-color)' }}
+       <div
+        className="py-4"
+       
       >
         <div className="container-custom flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-gray-100"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            <FiArrowLeft size={20} />
-          </button>
-          <div className="flex items-center gap-2">
-            <FiHelpCircle size={22} className="text-primary-600" />
+       
+          <div className="flex flex-col mx-auto items-start gap-2">
+            
             <h1
-              className="text-xl font-bold sm:text-2xl"
-              style={{ color: 'var(--text-primary)' }}
+              className="lg:text-[2.3rem] sm:text-2xl privacy-policy_txt"
+              style={{ color: 'var(--text-primary)', letterSpacing:'normal !important' }}
             >
-              Frequently Asked Questions
+              Check out the amazing food variety of NonStop Pizza
             </h1>
-          </div>
+            <p>SWe strive to bring the best experience of online ordering and delivery to our customers. If you are looking for best online deals with home delivery across the city then look no further, order now your favorite food from Kababjees Fried Chicken & enjoy your day.</p>
+              </div>
         </div>
       </div>
 
-      <div className="container-custom mt-6">
-        <div className="mx-auto max-w-3xl">
+      <div className="container-custom" style={{fontFamily:'Poppins'}}>
+        <h2 className='uppercase' style={{fontSize:'2.3rem',letterSpacing:'0px', color:'var(--text-primary)'}}>FAQ</h2>
+        <div className="mx-auto">
           {faqs.length === 0 ? (
             <div
-              className="rounded-2xl py-16 text-center"
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
-              }}
+              className="text-center"
+           
             >
               <FiHelpCircle size={48} className="mx-auto text-primary-300" />
               <p
-                className="mt-4 text-lg font-medium"
-                style={{ color: 'var(--text-secondary)' }}
+                className="mt-2 text-lg font-medium"
+                style={{ color: 'var(--text-primary)' }}
               >
                 FAQs coming soon
               </p>
@@ -150,7 +143,7 @@ const FAQsPage = () => {
                     key={faq.id}
                     className="faq-item overflow-hidden rounded-2xl transition-all"
                     style={{
-                      backgroundColor: 'var(--bg-card)',
+                    
                       border: `1px solid ${isOpen ? '#dc2626' : 'var(--border-color)'}`,
                     }}
                   >
@@ -160,7 +153,7 @@ const FAQsPage = () => {
                       className="flex w-full items-center justify-between gap-4 p-4 text-left transition-all sm:p-5"
                     >
                       <h3
-                        className="text-sm font-bold sm:text-base"
+                        className="lg:text-[1.7rem] sm:text-[1rem]"
                         style={{ color: 'var(--text-primary)' }}
                       >
                         {faq.question}
@@ -172,8 +165,8 @@ const FAQsPage = () => {
                         style={
                           !isOpen
                             ? {
-                                backgroundColor: 'var(--bg-secondary)',
-                                color: 'var(--text-secondary)',
+                               
+                                color: 'var(--text-primary)',
                               }
                             : {}
                         }
@@ -188,7 +181,7 @@ const FAQsPage = () => {
                       style={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
                     >
                       <div
-                        className="border-t px-4 py-4 text-sm leading-relaxed whitespace-pre-line sm:px-5 sm:py-5"
+                        className="border-t px-4 py-4 leading-relaxed whitespace-pre-line sm:px-5 sm:py-5 lg:text-[1.1rem] sm:text-[.8rem]"
                         style={{
                           color: 'var(--text-secondary)',
                           borderColor: 'var(--border-color)',

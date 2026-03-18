@@ -168,7 +168,7 @@ const BottomCartBar = () => {
       };
 
     addToCart(product, defaultVariant, 1, '');
-    toast.success(`${product.name} added! 🍕`);
+    toast.success(`${product.name} added!`);
   };
 
   // Handle checkout

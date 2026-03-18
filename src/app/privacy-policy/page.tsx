@@ -57,40 +57,35 @@ const PrivacyPolicyPage = () => {
   }
 
   return (
-    <div className="min-h-screen pb-10">
+    <div className="min-h-screen max pb-10"  style={{width:'85.5vw', fontFamily:'Poppins', margin:'0 auto'}}>
       {/* Header */}
       <div
-        className="border-b py-4"
-        style={{ borderColor: 'var(--border-color)' }}
+        className="py-4"
+       
       >
         <div className="container-custom flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-gray-100"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            <FiArrowLeft size={20} />
-          </button>
-          <div className="flex items-center gap-2">
-            <FiShield size={22} className="text-primary-600" />
+       
+          <div className="flex flex-col mx-auto items-start gap-2">
+            
             <h1
-              className="text-xl font-bold sm:text-2xl"
+              className="lg:text-[2.3rem] sm:text-2xl privacy-policy_txt"
               style={{ color: 'var(--text-primary)' }}
             >
-              Privacy Policy
+              Our Privacy & Security Policies
             </h1>
-          </div>
+            <p>Safeguarding your privacy and the security of your personal information is important to us. Please take a few minutes to read the following policies so that you understand how we treat your personal information. As we continuously improve and expand our services, these policies might change. So please check them out periodically. If you have questions about our policy, please click on the Feedback option to contact us via our electronic feedback form.</p>
+              </div>
         </div>
       </div>
 
-      <div className="container-custom mt-6">
-        <div className="mx-auto max-w-3xl">
+      <div className="container-custom" style={{fontFamily:'Poppins'}}>
+        <div className="mx-auto">
           {sections.length === 0 ? (
             <div
-              className="rounded-2xl py-16 text-center"
+              className="text-start"
               style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
+           
+         
               }}
             >
               <FiShield size={48} className="mx-auto text-primary-300" />
@@ -103,44 +98,29 @@ const PrivacyPolicyPage = () => {
             </div>
           ) : (
             <div
-              className="rounded-2xl p-6 sm:p-8"
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
-              }}
+           
             >
               {/* Last Updated */}
-              <p
-                className="mb-6 text-xs"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                Last Updated:{' '}
-                {new Date(
-                  sections[sections.length - 1]?.updated_at || Date.now()
-                ).toLocaleDateString('en-PK', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              </p>
+              
 
               {/* Policy Sections */}
               {sections.map((section, index) => (
                 <div
                   key={section.id}
                   className={`policy-section ${
-                    index > 0 ? 'mt-8' : ''
+                    index > 0 ? 'mt-4' : ''
                   }`}
                 >
                   <h2
-                    className="text-lg font-bold sm:text-xl"
+                    className="lg:text-[2rem] privacy-policy_txt text-semibold sm:text-xl"
+                 
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    {index + 1}. {section.heading}
+                    {section.heading}
                   </h2>
                   <div
-                    className="mt-3 text-sm leading-relaxed whitespace-pre-line"
-                    style={{ color: 'var(--text-secondary)' }}
+                    className="mt-3 leading-relaxed  whitespace-pre-line "
+                    style={{ color: 'var(--text-primary)' }}
                   >
                     {section.content}
                   </div>

@@ -442,7 +442,7 @@ const CheckoutPage = () => {
   // Empty Cart View
   if (totalItems === 0 && !orderPlaced) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="flex min-h-screen items-center justify-center px-4" style={{fontFamily:'Poppins'}}>
         <div className="text-center">
           <span className="text-6xl">🛒</span>
           <h1
@@ -458,7 +458,7 @@ const CheckoutPage = () => {
             onClick={() => router.push('/')}
             className="btn-primary mt-6 rounded-xl px-8"
           >
-            Browse Menu 🍕
+            Browse Menu
           </button>
         </div>
       </div>

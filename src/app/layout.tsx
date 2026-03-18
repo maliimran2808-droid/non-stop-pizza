@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import BottomCartBar from "@/components/BottomCartBar";
 import { Toaster } from "react-hot-toast";
 
+
 const geistSans = Geist({
   variable: "--font-body",
   subsets: ["latin"],
@@ -56,14 +57,22 @@ export default function RootLayout({
 >
         <ThemeProvider>
           <LoadingScreen />
-          <Toaster
-            position="top-right"
+                   <Toaster
+            position="bottom-center"
+            containerStyle={{
+              bottom: 70,
+            }}
             toastOptions={{
-              duration: 3000,
+              duration: 2000,
               style: {
-                background: 'var(--bg-card)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border-color)',
+                background: '#16a34a',
+                color: 'white',
+                fontFamily:'Poppins',
+                borderRadius: '16px',
+                padding: '12px 20px',
+                fontSize: '11px',
+                fontWeight: '600',
+              
               },
               success: {
                 iconTheme: {
