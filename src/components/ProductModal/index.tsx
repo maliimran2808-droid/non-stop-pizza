@@ -425,10 +425,10 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                 style={{borderRadius:'5px', fontFamily:'Salmond', fontSize:'1.2rem', padding:'0px'}}
                 className="btn-primary crt-sze_txt flex flex-1 items-center justify-between gap-2  text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
               >
-                <span className='flex item-center justify-center pt-3 px-5 pb-1.5'>
+                <span className='flex item-center txt-modal justify-center pt-3 px-5 pb-1.5'>
                   Rs. {totalPrice.toLocaleString()}
                 </span>
-                <span className='flex item-center justify-center pt-3 px-5 pb-1.5'>
+                <span className='flex item-center txt-modal justify-center pt-3 px-5 pb-1.5'>
                   Add to Cart 
                 </span>
               </button>

@@ -582,6 +582,12 @@ body {
   .logo-img{
     width: 7rem;
   }
+  .txt-modal
+{
+  font-size: 14px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
   .logo-img2{
     width: 10rem;
   }
