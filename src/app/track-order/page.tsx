@@ -346,10 +346,11 @@ function TrackOrderContent() {
                     </h3>
 
                     <div className="space-y-0 flex justify-between tracking-situation lg:flex-row sm:flex-col">
-                      {statusSteps.map((step, index) => {
-                        const isCompleted = index < currentIndex;
-                        const isActive = index === currentIndex;
-                        const isPending = index > currentIndex;
+                                       {statusSteps.map((step, index) => {
+                        const isDelivered = order.order_status === 'delivered';
+                        const isCompleted = isDelivered ? true : index < currentIndex;
+                        const isActive = isDelivered ? false : index === currentIndex;
+                        const isPending = isDelivered ? false : index > currentIndex;
 
                         return (
                           <div key={step.key} className="flex gap-4">
@@ -379,8 +380,6 @@ function TrackOrderContent() {
                                 )}
                               </div>
 
-                              {/* Line */}
-                        
                             </div>
 
                             {/* Content */}
@@ -405,10 +404,12 @@ function TrackOrderContent() {
                                 className="text-xs"
                                 style={{ color: 'var(--text-secondary)' }}
                               >
-                                {isCompleted
+                                {isCompleted && isDelivered && index === statusSteps.length - 1
+                                  ? '🎉 Order Delivered!'
+                                  : isCompleted
                                   ? '✓ Completed'
                                   : isActive
-                                  ? 'Your order has been delivered ✅...'
+                                  ? '⏳ In Progress...'
                                   : 'Pending'}
                               </p>
                             </div>
