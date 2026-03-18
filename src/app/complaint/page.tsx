@@ -120,9 +120,9 @@ const ComplaintPage = () => {
   if (submitted) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="success-container text-center">
-          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
-            <FiCheck size={48} className="text-green-600" />
+        <div className="success-container text-center" style={{fontFamily:'Poppins'}}>
+          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary-600">
+            <FiCheck size={48} className="text-white-600" />
           </div>
           <h1
             className="text-2xl font-bold sm:text-3xl"
@@ -163,7 +163,7 @@ const ComplaintPage = () => {
               onClick={() => router.push('/')}
               className="btn-primary rounded-xl px-8"
             >
-              Back to Menu 🍕
+              Back to Menu
             </button>
           </div>
         </div>
@@ -172,30 +172,24 @@ const ComplaintPage = () => {
   }
 
   return (
-    <div className="min-h-screen pb-10">
+    <div className="min-h-screen pb-10 ">
       {/* Header */}
       <div
-        className="complaint-section border-b py-4"
-        style={{ borderColor: 'var(--border-color)' }}
+        className="complaint-section py-4"
+       
       >
-        <div className="container-custom flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-gray-100"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            <FiArrowLeft size={20} />
-          </button>
+        <div className="container-custom justify-center text-center flex items-center gap-4">
+      
           <div>
             <h1
-              className="text-xl font-bold sm:text-2xl"
-              style={{ color: 'var(--text-primary)' }}
+              className="lg:text-[3rem] sm:text-2xl"
+              style={{ color: 'var(--text-primary)' , fontFamily:'Poppins'}}
             >
               Submit a Complaint
             </h1>
             <p
               className="text-xs sm:text-sm"
-              style={{ color: 'var(--text-secondary)' }}
+              style={{ color: 'var(--text-secondary)' , fontFamily:'Poppins'}}
             >
               We value your feedback and will resolve your issue promptly
             </p>
@@ -209,12 +203,12 @@ const ComplaintPage = () => {
           <div
             className="complaint-section mb-6 flex items-start gap-3 rounded-2xl p-4"
             style={{
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border-color)',
+              backgroundColor:'var(--checkout-page)',
+              border: '1px solid var(--input-checkcolor)',
             }}
           >
             <FiAlertCircle size={20} className="mt-0.5 flex-shrink-0 text-primary-600" />
-            <div>
+            <div style={{fontFamily:'Poppins'}}>
               <p
                 className="text-sm font-medium"
                 style={{ color: 'var(--text-primary)' }}
@@ -235,8 +229,9 @@ const ComplaintPage = () => {
           <div
             className="complaint-section rounded-2xl p-5 sm:p-6"
             style={{
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border-color)',
+              fontFamily:'Poppins',
+               backgroundColor:'var(--checkout-page)',
+              border: '1px solid var(--input-checkcolor)',
             }}
           >
             <div className="space-y-5">
@@ -248,12 +243,12 @@ const ComplaintPage = () => {
                     className="mb-1.5 flex items-center gap-1.5 text-sm font-medium"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    <FiUser size={14} className="text-primary-600" />
-                    Full Name *
+                    Full Name
                   </label>
                   <input
                     type="text"
                     className="input-field"
+                    style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}}
                     placeholder="Enter your name"
                     value={form.customer_name}
                     onChange={(e) => handleChange('customer_name', e.target.value)}
@@ -271,14 +266,14 @@ const ComplaintPage = () => {
                     className="mb-1.5 flex items-center gap-1.5 text-sm font-medium"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    <FiPhone size={14} className="text-primary-600" />
-                    Phone Number *
+                    Phone Number
                   </label>
                   <input
                     type="tel"
                     className="input-field"
                     placeholder="03XX XXXXXXX"
                     value={form.customer_phone}
+                      style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}}
                     onChange={(e) => handleChange('customer_phone', e.target.value)}
                   />
                   {errors.customer_phone && (
@@ -295,12 +290,12 @@ const ComplaintPage = () => {
                   className="mb-1.5 flex items-center gap-1.5 text-sm font-medium"
                   style={{ color: 'var(--text-primary)' }}
                 >
-                  <FiMail size={14} className="text-primary-600" />
-                  Email (Optional)
+                  Email
                 </label>
                 <input
                   type="email"
                   className="input-field"
+                    style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}}
                   placeholder="your@email.com"
                   value={form.customer_email}
                   onChange={(e) => handleChange('customer_email', e.target.value)}
@@ -318,12 +313,12 @@ const ComplaintPage = () => {
                   className="mb-1.5 flex items-center gap-1.5 text-sm font-medium"
                   style={{ color: 'var(--text-primary)' }}
                 >
-                  <FiMessageSquare size={14} className="text-primary-600" />
-                  Subject *
+                  Subject
                 </label>
                 <input
                   type="text"
                   className="input-field"
+                    style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}}
                   placeholder="Brief title of your complaint"
                   value={form.subject}
                   onChange={(e) => handleChange('subject', e.target.value)}
@@ -348,7 +343,7 @@ const ComplaintPage = () => {
                   <button
                     key={tag}
                     onClick={() => handleChange('subject', tag)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                    className={`rounded-full cursor-pointer px-3 py-1.5 text-xs font-medium transition-all ${
                       form.subject === tag
                         ? 'bg-primary-600 text-white'
                         : ''
@@ -374,12 +369,13 @@ const ComplaintPage = () => {
                   className="mb-1.5 flex items-center gap-1.5 text-sm font-medium"
                   style={{ color: 'var(--text-primary)' }}
                 >
-                  <FiMessageSquare size={14} className="text-primary-600" />
-                  Describe Your Complaint *
+              
+                  Describe Your Complaint
                 </label>
                 <textarea
                   className="input-field resize-none"
                   rows={5}
+                    style={{backgroundColor:'var(--input-checkout)', borderColor:'var(--input-checkcolor)'}}
                   placeholder="Please describe your issue in detail. Include your order number if applicable..."
                   value={form.message}
                   onChange={(e) => handleChange('message', e.target.value)}
@@ -409,7 +405,7 @@ const ComplaintPage = () => {
                 ) : (
                   <>
                     <FiSend size={18} />
-                    <span>Submit Complaint</span>
+                    <span style={{fontFamily:'Poppins'}}>Submit Complaint</span>
                   </>
                 )}
               </button>
