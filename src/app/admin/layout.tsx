@@ -17,6 +17,7 @@ import {
   FiBell,
   FiTag,
   FiShield,
+  FiHelpCircle,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
@@ -29,6 +30,7 @@ const sidebarLinks = [
   { href: '/admin/vouchers', label: 'Vouchers', icon: FiTag },
   { href: '/admin/banners', label: 'Banners', icon: FiImage },
   { href: '/admin/privacy-policy', label: 'Privacy Policy', icon: FiShield },
+   { href: '/admin/faqs', label: 'FAQs', icon: FiHelpCircle },
   { href: '/admin/settings', label: 'Settings', icon: FiSettings },
 ];
 

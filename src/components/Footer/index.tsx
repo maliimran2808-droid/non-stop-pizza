@@ -156,6 +156,7 @@ const Footer = () => {
                   { href: '/complaint', label: 'Submit Complaint' },
                   { href: '/checkout', label: 'Cart / Checkout' },
                   { href: '/privacy-policy', label: 'Privacy Policy' },
+                    { href: '/faqs', label: 'FAQs' },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link
