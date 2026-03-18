@@ -59,11 +59,11 @@ const Header = () => {
     if (!isMobileMenuOpen) {
       setIsMobileMenuOpen(true);
       setTimeout(() => {
-        gsap.fromTo(
-          '.mobile-menu',
-          { x: '100%', opacity: 0 },
-          { x: '0%', opacity: 1, duration: 0.4, ease: 'power3.out' }
-        );
+        gsap.to('.mobile-menu', {
+          x: '0%',
+          duration: 0.4,
+          ease: 'power3.out',
+        });
         gsap.fromTo(
           '.mobile-menu-item',
           { x: 50, opacity: 0 },
@@ -80,7 +80,6 @@ const Header = () => {
     } else {
       gsap.to('.mobile-menu', {
         x: '100%',
-        opacity: 0,
         duration: 0.3,
         ease: 'power3.in',
         onComplete: () => setIsMobileMenuOpen(false),
@@ -193,7 +192,7 @@ if (pathname.startsWith('/admin')) return null;
           {/* Mobile Menu Panel */}
           <div
             className="mobile-menu fixed top-0 right-0 z-50 h-full w-72 shadow-2xl sm:w-80"
-            style={{ backgroundColor: '#dc2828', fontFamily:'Poppins'}}
+            style={{ backgroundColor: '#dc2828', fontFamily:'Poppins',transform: 'translateX(100%)',}}
           >
             {/* Close Button */}
             <div className="flex h-16 items-center justify-between text-white px-6 sm:h-20">
