@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import gsap from 'gsap';
 import {
   FiSave, FiSettings, FiLock, FiEye, FiEyeOff, FiUser, FiBell,
-  FiTruck, FiShield, FiGlobe, FiAlertTriangle, FiMonitor,
+  FiTruck, FiShield, FiGlobe, FiAlertTriangle, FiMonitor, FiMail,
 } from 'react-icons/fi';
 import { FaFacebookF, FaInstagram, FaTwitter, FaTiktok, FaYoutube, FaWhatsapp } from 'react-icons/fa';
 
@@ -34,6 +34,11 @@ const AdminSettingsPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [adminName, setAdminName] = useState('');
   const [isSavingName, setIsSavingName] = useState(false);
+    const [adminEmail, setAdminEmail] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [emailPassword, setEmailPassword] = useState('');
+  const [showEmailPassword, setShowEmailPassword] = useState(false);
+  const [isSavingEmail, setIsSavingEmail] = useState(false);
   // General
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantTagline, setRestaurantTagline] = useState('');
@@ -111,10 +116,12 @@ const AdminSettingsPage = () => {
         setWhatsapp(m.social_whatsapp || '');
       }
     } catch (err) { console.error('Settings error:', err); }
+       // Fetch admin info
     try {
       const res = await fetch('/api/admin/verify');
       const adminData = await res.json();
       if (adminData.admin?.name) setAdminName(adminData.admin.name);
+      if (adminData.admin?.email) { setAdminEmail(adminData.admin.email); setNewEmail(adminData.admin.email); }
     } catch { }
 
     setIsLoading(false);
@@ -176,6 +183,27 @@ const AdminSettingsPage = () => {
       toast.success('Name updated! Refresh to see changes in sidebar.');
     } catch { toast.error('Error'); }
     setIsSavingName(false);
+  };
+    // Change Email
+  const handleChangeEmail = async () => {
+    if (!newEmail.trim()) { toast.error('Email required'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) { toast.error('Enter a valid email'); return; }
+    if (!emailPassword) { toast.error('Enter your password to confirm'); return; }
+    if (newEmail.toLowerCase() === adminEmail.toLowerCase()) { toast.error('This is already your email'); return; }
+
+    setIsSavingEmail(true);
+    try {
+      const res = await fetch('/api/admin/change-email', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newEmail: newEmail.trim(), password: emailPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error || 'Failed'); setIsSavingEmail(false); return; }
+      toast.success('Email updated! Use new email to login next time.');
+      setAdminEmail(data.email);
+      setEmailPassword('');
+    } catch { toast.error('Error'); }
+    setIsSavingEmail(false);
   };
   // Save Delivery
   const handleSaveDelivery = async () => {
@@ -319,6 +347,7 @@ const AdminSettingsPage = () => {
 
           {/* ============ PROFILE ============ */}
           {/* ============ PROFILE ============ */}
+                 {/* ============ PROFILE ============ */}
           {activeSection === 'profile' && (
             <div className="space-y-6">
               {/* Change Name */}
@@ -331,6 +360,34 @@ const AdminSettingsPage = () => {
                   </div>
                   <button onClick={handleChangeName} disabled={isSavingName} className="flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#E8002D' }}>
                     {isSavingName ? 'Saving...' : <><FiUser size={14} /> Update Name</>}
+                  </button>
+                </div>
+              </div>
+
+              {/* Change Email */}
+              <div className="rounded-xl p-5" style={{ ...glassStyle }}>
+                <h3 className="mb-5 text-lg font-semibold text-white">Change Login Email</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className={label}>Current Email</label>
+                    <div className="rounded-xl px-4 py-2.5 text-sm text-gray-400" style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      {adminEmail || 'Loading...'}
+                    </div>
+                  </div>
+                  <div>
+                    <label className={label}>New Email</label>
+                    <input type="email" className={inp} style={inpStyle} value={newEmail} onChange={e => setNewEmail(e.target.value)} placeholder="newemail@example.com" />
+                  </div>
+                  <div>
+                    <label className={label}>Confirm with Password</label>
+                    <div className="relative">
+                      <input type={showEmailPassword ? 'text' : 'password'} className={`${inp} pr-12`} style={inpStyle} value={emailPassword} onChange={e => setEmailPassword(e.target.value)} placeholder="Enter your current password" />
+                      <button onClick={() => setShowEmailPassword(!showEmailPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">{showEmailPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}</button>
+                    </div>
+                    <p className="mt-1 text-[10px] text-gray-600">Password required to verify your identity</p>
+                  </div>
+                  <button onClick={handleChangeEmail} disabled={isSavingEmail} className="flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#E8002D' }}>
+                    {isSavingEmail ? 'Saving...' : <><FiMail size={14} /> Update Email</>}
                   </button>
                 </div>
               </div>
