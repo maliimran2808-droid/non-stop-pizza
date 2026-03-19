@@ -24,6 +24,9 @@ const Footer = () => {
     restaurant_phone: '+92-XXX-XXXXXXX',
     restaurant_email: 'info@nonstoppizza.com',
     delivery_time: '30-45 mins',
+    social_facebook: '',
+    social_instagram: '',
+    social_whatsapp: '',
   });
 
   // Fetch settings
@@ -36,11 +39,14 @@ const Footer = () => {
           data.forEach((item) => {
             map[item.key] = item.value;
           });
-          setSettings({
+              setSettings({
             restaurant_name: map.restaurant_name || 'NonStop Pizza',
             restaurant_phone: map.restaurant_phone || '+92-XXX-XXXXXXX',
             restaurant_email: map.restaurant_email || 'info@nonstoppizza.com',
             delivery_time: map.delivery_time || '30-45 mins',
+            social_facebook: map.social_facebook || '',
+            social_instagram: map.social_instagram || '',
+            social_whatsapp: map.social_whatsapp || '',
           });
         }
       } catch (err) {
@@ -240,31 +246,29 @@ const Footer = () => {
               >
                 Follow Us
               </h4>
-              <div className="flex items-center justify-center gap-1 sm:justify-end" style={{fontFamily:'Raleway', fontWeight:'400'}}>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-8 w-9 items-center justify-center rounded-full text-primary transition-all"
-                >
-                  <FaFacebookF size={17} />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-8 w-8 items-center justify-center rounded-full  text-primary transition-all"
-                >
-                  <FaInstagram size={17} />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-primary transition-all"
-                >
-                  <FaWhatsapp size={19} />
-                </a>
+                           <div className="flex items-center justify-center gap-3 sm:justify-end">
+                {settings.social_facebook && (
+                  <a href={settings.social_facebook} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white">
+                    <FaFacebookF size={16} />
+                  </a>
+                )}
+                {settings.social_instagram && (
+                  <a href={settings.social_instagram} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white">
+                    <FaInstagram size={16} />
+                  </a>
+                )}
+                {settings.social_whatsapp && (
+                  <a href={`https://wa.me/${settings.social_whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white">
+                    <FaWhatsapp size={18} />
+                  </a>
+                )}
+                {!settings.social_facebook && !settings.social_instagram && !settings.social_whatsapp && (
+                  <>
+                    <a href="#" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"><FaFacebookF size={16} /></a>
+                    <a href="#" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"><FaInstagram size={16} /></a>
+                    <a href="#" className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 transition-all hover:bg-primary-600 hover:text-white"><FaWhatsapp size={18} /></a>
+                  </>
+                )}
               </div>
               <p
                 className="mt-4 text-xs"

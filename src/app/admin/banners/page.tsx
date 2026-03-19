@@ -4,14 +4,25 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase-client';
 import { BannerSlide } from '@/types';
 import toast from 'react-hot-toast';
+import gsap from 'gsap';
 import {
   FiPlus,
   FiEdit2,
   FiTrash2,
   FiX,
   FiImage,
+  FiSearch,
+  FiChevronDown,
+  FiChevronLeft,
+  FiChevronRight,
+  FiEye,
   FiArrowUp,
   FiArrowDown,
+  FiUpload,
+  FiCheck,
+  FiAlertCircle,
+  FiLink,
+  FiMonitor,
 } from 'react-icons/fi';
 
 interface BannerForm {
@@ -24,12 +35,14 @@ interface BannerForm {
 }
 
 const initialForm: BannerForm = {
-  title: '',
-  subtitle: '',
-  image_url: '',
-  link_url: '',
-  display_order: 0,
-  is_active: true,
+  title: '', subtitle: '', image_url: '', link_url: '', display_order: 0, is_active: true,
+};
+
+const glassStyle: React.CSSProperties = {
+  backgroundColor: 'rgba(255,255,255,0.03)',
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  border: '1px solid rgba(255,255,255,0.07)',
 };
 
 const AdminBannersPage = () => {
@@ -42,404 +55,276 @@ const AdminBannersPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Fetch banners
-  useEffect(() => {
-    fetchBanners();
-  }, []);
+  // Preview
+  const [previewBanner, setPreviewBanner] = useState<BannerSlide | null>(null);
+
+  // Filters
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  // Stats
+  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 });
+
+  useEffect(() => { fetchBanners(); }, []);
 
   const fetchBanners = async () => {
     try {
-      const { data } = await supabase
-        .from('banner_slides')
-        .select('*')
-        .order('display_order', { ascending: true });
-
-      if (data) setBanners(data);
-    } catch (err) {
-      console.error('Fetch error:', err);
-    }
+      const { data } = await supabase.from('banner_slides').select('*').order('display_order', { ascending: true });
+      if (data) {
+        setBanners(data);
+        setStats({
+          total: data.length,
+          active: data.filter(b => b.is_active).length,
+          inactive: data.filter(b => !b.is_active).length,
+        });
+      }
+    } catch (err) { console.error('Fetch error:', err); }
     setIsLoading(false);
+    setTimeout(() => { gsap.fromTo('.ban-el', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: 'power3.out' }); }, 100);
   };
 
-  // Handle form change
   const handleFormChange = (field: keyof BannerForm, value: string | boolean | number) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  // Handle image select
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image must be less than 5MB');
-      return;
-    }
-
+    if (file.size > 5 * 1024 * 1024) { toast.error('Max 5MB'); return; }
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
   };
 
-  // Upload image
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) { toast.error('Images only'); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error('Max 5MB'); return; }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
   const uploadImage = async (file: File): Promise<string | null> => {
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
-
-      const { error } = await supabase.storage
-        .from('banners')
-        .upload(fileName, file);
-
+      const ext = file.name.split('.').pop();
+      const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from('banners').upload(name, file);
       if (error) throw error;
-
-      const { data } = supabase.storage
-        .from('banners')
-        .getPublicUrl(fileName);
-
-      return data.publicUrl;
-    } catch (err) {
-      console.error('Upload error:', err);
-      toast.error('Failed to upload image');
-      return null;
-    }
+      return supabase.storage.from('banners').getPublicUrl(name).data.publicUrl;
+    } catch { toast.error('Upload failed'); return null; }
   };
 
-  // Open add modal
   const openAddModal = () => {
-    setForm({
-      ...initialForm,
-      display_order: banners.length + 1,
-    });
-    setImageFile(null);
-    setImagePreview(null);
-    setIsEditing(false);
-    setEditingId(null);
-    setIsModalOpen(true);
+    setForm({ ...initialForm, display_order: banners.length + 1 });
+    setImageFile(null); setImagePreview(null);
+    setIsEditing(false); setEditingId(null); setIsModalOpen(true);
   };
 
-  // Open edit modal
   const openEditModal = (banner: BannerSlide) => {
     setForm({
-      title: banner.title || '',
-      subtitle: banner.subtitle || '',
-      image_url: banner.image_url,
-      link_url: banner.link_url || '',
-      display_order: banner.display_order,
-      is_active: banner.is_active,
+      title: banner.title || '', subtitle: banner.subtitle || '',
+      image_url: banner.image_url, link_url: banner.link_url || '',
+      display_order: banner.display_order, is_active: banner.is_active,
     });
-    setImageFile(null);
-    setImagePreview(banner.image_url || null);
-    setIsEditing(true);
-    setEditingId(banner.id);
-    setIsModalOpen(true);
+    setImageFile(null); setImagePreview(banner.image_url || null);
+    setIsEditing(true); setEditingId(banner.id); setIsModalOpen(true);
   };
 
-  // Save banner
   const handleSave = async () => {
-    if (!imagePreview && !form.image_url) {
-      toast.error('Please upload a banner image');
-      return;
-    }
-
+    if (!imagePreview && !form.image_url) { toast.error('Upload an image'); return; }
     setIsSaving(true);
-
     try {
       let imageUrl = form.image_url;
+      if (imageFile) { const url = await uploadImage(imageFile); if (url) imageUrl = url; }
 
-      if (imageFile) {
-        const url = await uploadImage(imageFile);
-        if (url) imageUrl = url;
-      }
-
-      const bannerData = {
-        title: form.title.trim() || null,
-        subtitle: form.subtitle.trim() || null,
-        image_url: imageUrl,
-        link_url: form.link_url.trim() || null,
-        display_order: form.display_order,
-        is_active: form.is_active,
+      const data = {
+        title: form.title.trim() || null, subtitle: form.subtitle.trim() || null,
+        image_url: imageUrl, link_url: form.link_url.trim() || null,
+        display_order: form.display_order, is_active: form.is_active,
       };
 
       if (isEditing && editingId) {
-        const { error } = await supabase
-          .from('banner_slides')
-          .update(bannerData)
-          .eq('id', editingId);
-
-        if (error) throw error;
+        await supabase.from('banner_slides').update(data).eq('id', editingId);
         toast.success('Banner updated! ✅');
       } else {
-        const { error } = await supabase
-          .from('banner_slides')
-          .insert(bannerData);
-
-        if (error) throw error;
+        await supabase.from('banner_slides').insert(data);
         toast.success('Banner added! 🖼️');
       }
-
-      setIsModalOpen(false);
-      fetchBanners();
-    } catch (err) {
-      console.error('Save error:', err);
-      toast.error('Failed to save banner');
-    }
-
+      setIsModalOpen(false); fetchBanners();
+    } catch { toast.error('Save failed'); }
     setIsSaving(false);
   };
 
-  // Delete banner
   const handleDelete = async (banner: BannerSlide) => {
-    if (!confirm('Are you sure you want to delete this banner?')) return;
-
+    if (!confirm('Delete this banner?')) return;
     try {
-      const { error } = await supabase
-        .from('banner_slides')
-        .delete()
-        .eq('id', banner.id);
-
-      if (error) throw error;
-
-      setBanners((prev) => prev.filter((b) => b.id !== banner.id));
-      toast.success('Banner deleted');
-    } catch (err) {
-      toast.error('Failed to delete banner');
-    }
+      await supabase.from('banner_slides').delete().eq('id', banner.id);
+      setBanners(prev => prev.filter(b => b.id !== banner.id));
+      toast.success('Deleted');
+    } catch { toast.error('Failed'); }
   };
 
-  // Toggle active
   const toggleActive = async (banner: BannerSlide) => {
     try {
-      const { error } = await supabase
-        .from('banner_slides')
-        .update({ is_active: !banner.is_active })
-        .eq('id', banner.id);
-
-      if (error) throw error;
-
-      setBanners((prev) =>
-        prev.map((b) =>
-          b.id === banner.id ? { ...b, is_active: !b.is_active } : b
-        )
-      );
-
-      toast.success(
-        `Banner ${!banner.is_active ? 'activated' : 'deactivated'}`
-      );
-    } catch (err) {
-      toast.error('Failed to update banner');
-    }
+      await supabase.from('banner_slides').update({ is_active: !banner.is_active }).eq('id', banner.id);
+      setBanners(prev => prev.map(b => b.id === banner.id ? { ...b, is_active: !b.is_active } : b));
+      toast.success(`${!banner.is_active ? 'Activated' : 'Deactivated'}`);
+    } catch { toast.error('Failed'); }
   };
 
-  // Move banner up/down
-  const moveBanner = async (bannerId: string, direction: 'up' | 'down') => {
-    const index = banners.findIndex((b) => b.id === bannerId);
-    if (index === -1) return;
-
-    if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === banners.length - 1) return;
+  const moveBanner = async (id: string, direction: 'up' | 'down') => {
+    const idx = banners.findIndex(b => b.id === id);
+    if (idx === -1) return;
+    if (direction === 'up' && idx === 0) return;
+    if (direction === 'down' && idx === banners.length - 1) return;
 
     const newBanners = [...banners];
-    const swapIndex = direction === 'up' ? index - 1 : index + 1;
-
-    const tempOrder = newBanners[index].display_order;
-    newBanners[index].display_order = newBanners[swapIndex].display_order;
-    newBanners[swapIndex].display_order = tempOrder;
-
-    [newBanners[index], newBanners[swapIndex]] = [
-      newBanners[swapIndex],
-      newBanners[index],
-    ];
-
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    const temp = newBanners[idx].display_order;
+    newBanners[idx].display_order = newBanners[swapIdx].display_order;
+    newBanners[swapIdx].display_order = temp;
+    [newBanners[idx], newBanners[swapIdx]] = [newBanners[swapIdx], newBanners[idx]];
     setBanners(newBanners);
 
     try {
-      await supabase
-        .from('banner_slides')
-        .update({ display_order: newBanners[index].display_order })
-        .eq('id', newBanners[index].id);
-
-      await supabase
-        .from('banner_slides')
-        .update({ display_order: newBanners[swapIndex].display_order })
-        .eq('id', newBanners[swapIndex].id);
-
-      toast.success('Order updated');
-    } catch (err) {
-      toast.error('Failed to update order');
-      fetchBanners();
-    }
+      await supabase.from('banner_slides').update({ display_order: newBanners[idx].display_order }).eq('id', newBanners[idx].id);
+      await supabase.from('banner_slides').update({ display_order: newBanners[swapIdx].display_order }).eq('id', newBanners[swapIdx].id);
+    } catch { fetchBanners(); }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="spinner h-10 w-10 text-primary-600" />
-      </div>
-    );
-  }
+  // Filter
+  const filtered = banners.filter(b => {
+    const matchSearch = (b.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || (b.subtitle || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const matchStatus = filterStatus === 'all' || (filterStatus === 'active' && b.is_active) || (filterStatus === 'inactive' && !b.is_active);
+    return matchSearch && matchStatus;
+  });
+
+  if (isLoading) return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="spinner h-8 w-8" style={{ borderColor: '#E8002D', borderTopColor: 'transparent' }} />
+    </div>
+  );
 
   return (
-    <div>
+    <div style={{ fontFamily: 'var(--font-poppins)' }}>
       {/* Header */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 ban-el">
         <div>
-          <h1
-            className="text-2xl font-bold"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Banners Management 🖼️
+          <h1 className="text-3xl font-semibold text-white">
+            Banners
+            <span className="ml-1 inline-block h-1 w-8 rounded-full" style={{ backgroundColor: '#E8002D' }} />
           </h1>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            {banners.length} total banners • These appear on the home page slider
-          </p>
+          <p className="mt-1 text-sm font-normal text-gray-500">Manage your website & app banners</p>
         </div>
-
-        <button
-          onClick={openAddModal}
-          className="btn-primary flex items-center gap-2 rounded-xl"
-        >
-          <FiPlus size={18} />
-          Add Banner
+        <button onClick={openAddModal} className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all hover:shadow-lg" style={{ backgroundColor: '#E8002D' }}>
+          <FiUpload size={16} /> Upload New Banner
         </button>
       </div>
 
-      {/* Banners Grid */}
-      {banners.length === 0 ? (
-        <div
-          className="rounded-2xl py-16 text-center"
-          style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-color)',
-          }}
-        >
-          <span className="text-5xl">🖼️</span>
-          <p
-            className="mt-4 text-lg font-medium"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            No banners yet
-          </p>
-          <p
-            className="mt-1 text-sm"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            Placeholder banners will be shown until you add your own
-          </p>
-          <button
-            onClick={openAddModal}
-            className="btn-primary mt-4 rounded-xl"
-          >
-            Add First Banner
-          </button>
+      {/* Stats */}
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 ban-el">
+        {[
+          { label: 'Total Banners', value: stats.total, color: '#E8002D', icon: FiImage },
+          { label: 'Active', value: stats.active, color: '#22C55E', icon: FiCheck },
+          { label: 'Inactive', value: stats.inactive, color: '#EF4444', icon: FiAlertCircle },
+        ].map((s, i) => (
+          <div key={i} className="rounded-xl p-4" style={{ ...glassStyle }}>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: `${s.color}15` }}>
+              <s.icon size={16} style={{ color: s.color }} />
+            </div>
+            <p className="mt-3 text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-jetbrains)' }}>{s.value}</p>
+            <p className="mt-0.5 text-[10px] font-medium uppercase tracking-widest text-gray-500">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div className="mb-4 flex flex-wrap items-center gap-3 ban-el">
+        <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2.5" style={{ ...glassStyle, minWidth: '200px' }}>
+          <FiSearch size={14} className="text-gray-500" />
+          <input type="text" placeholder="Search banners..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full border-none bg-transparent text-sm text-white outline-none placeholder:text-gray-600" />
+        </div>
+        <div className="relative">
+          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="appearance-none rounded-xl px-4 py-2.5 pr-8 text-xs font-medium text-white outline-none" style={{ ...glassStyle }}>
+            <option value="all" style={{ backgroundColor: '#111' }}>All Status</option>
+            <option value="active" style={{ backgroundColor: '#111' }}>✅ Active</option>
+            <option value="inactive" style={{ backgroundColor: '#111' }}>❌ Inactive</option>
+          </select>
+          <FiChevronDown size={12} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500" />
+        </div>
+      </div>
+
+      {/* Banner Cards */}
+      {filtered.length === 0 ? (
+        <div className="rounded-xl py-20 text-center ban-el" style={{ ...glassStyle }}>
+          <FiImage size={40} className="mx-auto" style={{ color: 'rgba(232,0,45,0.3)' }} />
+          <p className="mt-4 text-lg font-semibold text-gray-400">No banners uploaded yet</p>
+          <p className="mt-1 text-sm font-light text-gray-600">Upload your first banner to display on your website</p>
+          <button onClick={openAddModal} className="mt-4 rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ backgroundColor: '#E8002D' }}>Upload Banner</button>
         </div>
       ) : (
-        <div className="space-y-4">
-          {banners.map((banner, index) => (
-            <div
-              key={banner.id}
-              className="flex flex-col overflow-hidden rounded-2xl sm:flex-row"
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
-                opacity: banner.is_active ? 1 : 0.6,
-              }}
-            >
-              {/* Order Controls */}
-              <div
-                className="flex items-center justify-center gap-2 px-3 py-2 sm:flex-col sm:py-0"
-                style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  borderRight: '1px solid var(--border-color)',
-                }}
-              >
-                <button
-                  onClick={() => moveBanner(banner.id, 'up')}
-                  disabled={index === 0}
-                  className="flex h-7 w-7 items-center justify-center rounded transition-all hover:bg-gray-200 disabled:opacity-30"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  <FiArrowUp size={14} />
-                </button>
-                <span
-                  className="text-xs font-bold"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {index + 1}
-                </span>
-                <button
-                  onClick={() => moveBanner(banner.id, 'down')}
-                  disabled={index === banners.length - 1}
-                  className="flex h-7 w-7 items-center justify-center rounded transition-all hover:bg-gray-200 disabled:opacity-30"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  <FiArrowDown size={14} />
-                </button>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 ban-el">
+          {filtered.map((banner, idx) => (
+            <div key={banner.id} className="group overflow-hidden rounded-xl transition-all hover:shadow-lg hover:shadow-red-500/5" style={{ ...glassStyle, opacity: banner.is_active ? 1 : 0.6 }}>
+              {/* Image */}
+              <div className="relative overflow-hidden" style={{ aspectRatio: '16/5' }}>
+                <img src={banner.image_url} alt={banner.title || 'Banner'} className="h-full w-full object-cover transition-all duration-500 group-hover:brightness-75 group-hover:scale-105" />
+
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 transition-all group-hover:opacity-100">
+                  <button onClick={() => setPreviewBanner(banner)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-all hover:bg-white/30">
+                    <FiEye size={18} />
+                  </button>
+                  <button onClick={() => openEditModal(banner)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-all hover:bg-white/30">
+                    <FiEdit2 size={18} />
+                  </button>
+                </div>
+
+                {/* Order Badge */}
+                <div className="absolute left-3 top-3 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white" style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}>
+                  Order #{banner.display_order}
+                </div>
+
+                {/* Reorder */}
+                <div className="absolute right-3 top-3 flex gap-1 opacity-0 transition-all group-hover:opacity-100">
+                  <button onClick={() => moveBanner(banner.id, 'up')} className="flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70"><FiArrowUp size={12} /></button>
+                  <button onClick={() => moveBanner(banner.id, 'down')} className="flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70"><FiArrowDown size={12} /></button>
+                </div>
               </div>
 
-              {/* Banner Image */}
-              <div className="h-32 w-full overflow-hidden sm:h-auto sm:w-64">
-                <img
-                  src={banner.image_url}
-                  alt={banner.title || 'Banner'}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              {/* Banner Info */}
-              <div className="flex flex-1 flex-col justify-between p-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3
-                      className="text-base font-bold"
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {banner.title || 'No Title'}
-                    </h3>
-                    {!banner.is_active && (
-                      <span className="badge badge-red">Inactive</span>
+              {/* Info */}
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="truncate text-sm font-semibold text-white">{banner.title || 'Untitled Banner'}</h3>
+                    {banner.subtitle && <p className="mt-0.5 truncate text-[11px] font-light text-gray-500">{banner.subtitle}</p>}
+                    {banner.link_url && (
+                      <div className="mt-1 flex items-center gap-1">
+                        <FiLink size={10} className="text-gray-600" />
+                        <p className="truncate text-[10px] text-gray-600">{banner.link_url}</p>
+                      </div>
                     )}
                   </div>
-                  {banner.subtitle && (
-                    <p
-                      className="mt-1 text-sm"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      {banner.subtitle}
-                    </p>
-                  )}
-                  {banner.link_url && (
-                    <p className="mt-1 text-xs text-primary-600">
-                      Link: {banner.link_url}
-                    </p>
-                  )}
+
+                  {/* Status Toggle */}
+                  <button onClick={() => toggleActive(banner)}
+                    className="relative h-6 w-11 flex-shrink-0 rounded-full transition-all"
+                    style={{ backgroundColor: banner.is_active ? '#E8002D' : 'rgba(255,255,255,0.1)' }}>
+                    <div className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all" style={{ left: banner.is_active ? '22px' : '2px' }} />
+                    {banner.is_active && <div className="absolute inset-0 animate-pulse rounded-full" style={{ backgroundColor: 'rgba(232,0,45,0.3)' }} />}
+                  </button>
                 </div>
 
                 {/* Actions */}
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    onClick={() => toggleActive(banner)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                      banner.is_active
-                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                        : 'bg-red-100 text-red-700 hover:bg-red-200'
-                    }`}
-                  >
-                    {banner.is_active ? '✅ Active' : '❌ Inactive'}
+                <div className="mt-3 flex gap-2">
+                  <button onClick={() => openEditModal(banner)} className="flex flex-1 items-center justify-center gap-1 rounded-lg py-2 text-[11px] font-semibold text-white transition-all hover:bg-white/10" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <FiEdit2 size={11} /> Edit
                   </button>
-                  <button
-                    onClick={() => openEditModal(banner)}
-                    className="flex items-center gap-1 rounded-lg bg-primary-100 px-3 py-1.5 text-xs font-medium text-primary-600 transition-all hover:bg-primary-200"
-                  >
-                    <FiEdit2 size={12} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(banner)}
-                    className="flex items-center gap-1 rounded-lg bg-red-100 px-3 py-1.5 text-xs font-medium text-red-600 transition-all hover:bg-red-200"
-                  >
-                    <FiTrash2 size={12} />
-                    Delete
+                  <button onClick={() => handleDelete(banner)} className="flex flex-1 items-center justify-center gap-1 rounded-lg py-2 text-[11px] font-semibold text-red-400 transition-all hover:bg-red-500/10" style={{ border: '1px solid rgba(239,68,68,0.2)' }}>
+                    <FiTrash2 size={11} /> Delete
                   </button>
                 </div>
               </div>
@@ -448,193 +333,101 @@ const AdminBannersPage = () => {
         </div>
       )}
 
-      {/* Add/Edit Banner Modal */}
+      {/* Preview Modal */}
+      {previewBanner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.85)' }} onClick={() => setPreviewBanner(null)}>
+          <div className="relative max-h-[80vh] max-w-5xl overflow-hidden rounded-2xl" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setPreviewBanner(null)} className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70"><FiX size={18} /></button>
+            <img src={previewBanner.image_url} alt={previewBanner.title || 'Banner'} className="w-full object-contain" />
+            <div className="p-4" style={{ backgroundColor: '#111' }}>
+              <h3 className="text-lg font-semibold text-white">{previewBanner.title || 'Untitled'}</h3>
+              {previewBanner.subtitle && <p className="mt-1 text-sm text-gray-400">{previewBanner.subtitle}</p>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit Modal */}
       {isModalOpen && (
         <>
-          <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsModalOpen(false)}
-          />
-
+          <div className="fixed inset-0 z-40" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={() => setIsModalOpen(false)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div
-              className="w-full max-w-lg overflow-y-auto rounded-2xl p-6 shadow-2xl"
-              style={{
-                backgroundColor: 'var(--bg-primary)',
-                maxHeight: '90vh',
-              }}
-            >
-              {/* Modal Header */}
+            <div className="w-full max-w-lg overflow-y-auto rounded-2xl p-6 shadow-2xl" style={{ backgroundColor: '#111111', border: '1px solid rgba(255,255,255,0.07)', maxHeight: '90vh' }}>
               <div className="mb-5 flex items-center justify-between">
-                <h2
-                  className="text-xl font-bold"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  {isEditing ? 'Edit Banner' : 'Add New Banner'} 🖼️
+                <h2 className="text-xl font-semibold text-white">
+                  {isEditing ? 'Edit Banner' : 'Upload Banner'}
+                  <span className="ml-1 inline-block h-0.5 w-6 rounded-full" style={{ backgroundColor: '#E8002D' }} />
                 </h2>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg transition-all hover:bg-gray-100"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  <FiX size={20} />
-                </button>
+                <button onClick={() => setIsModalOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 hover:bg-white/5 hover:text-white"><FiX size={20} /></button>
               </div>
 
               <div className="space-y-4">
-                {/* Image Upload */}
+                {/* Image Upload — Drag & Drop */}
                 <div>
-                  <label
-                    className="mb-1.5 text-sm font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Banner Image *
-                  </label>
+                  <label className="mb-1.5 text-xs font-semibold uppercase tracking-widest text-gray-500">Banner Image *</label>
                   <div
-                    className="flex flex-col items-center gap-4 rounded-xl p-4"
+                    className={`mt-2 flex flex-col items-center justify-center rounded-xl p-6 transition-all ${isDragging ? 'scale-[1.02]' : ''}`}
                     style={{
-                      backgroundColor: 'var(--bg-secondary)',
-                      border: '2px dashed var(--border-color)',
+                      border: `2px dashed ${isDragging ? '#E8002D' : 'rgba(232,0,45,0.3)'}`,
+                      backgroundColor: isDragging ? 'rgba(232,0,45,0.05)' : 'rgba(255,255,255,0.02)',
                     }}
+                    onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
+                    onDragLeave={() => setIsDragging(false)}
+                    onDrop={handleDrop}
                   >
                     {imagePreview ? (
-                      <div className="h-40 w-full overflow-hidden rounded-xl">
-                        <img
-                          src={imagePreview}
-                          alt="Preview"
-                          className="h-full w-full object-cover"
-                        />
+                      <div className="w-full overflow-hidden rounded-xl" style={{ aspectRatio: '16/5' }}>
+                        <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
                       </div>
                     ) : (
-                      <div className="flex h-40 w-full items-center justify-center">
-                        <div className="text-center">
-                          <FiImage
-                            size={40}
-                            style={{ color: 'var(--text-secondary)' }}
-                            className="mx-auto"
-                          />
-                          <p
-                            className="mt-2 text-sm"
-                            style={{ color: 'var(--text-secondary)' }}
-                          >
-                            Upload banner image
-                          </p>
-                        </div>
-                      </div>
+                      <>
+                        <FiUpload size={32} className="text-gray-600" />
+                        <p className="mt-3 text-sm text-gray-400">Drag & drop your banner image here</p>
+                        <p className="mt-1 text-[10px] text-gray-600">PNG, JPG, WEBP — Recommended: 1920×600px</p>
+                      </>
                     )}
-                    <label className="btn-secondary cursor-pointer rounded-lg px-4 py-2 text-sm">
-                      {imagePreview ? 'Change Image' : 'Choose Image'}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageSelect}
-                      />
+                    <label className="mt-3 cursor-pointer rounded-lg px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-white/10" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                      {imagePreview ? 'Change Image' : 'Browse Files'}
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
                     </label>
-                    <p
-                      className="text-xs"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Recommended: 1200×500px, Max 5MB
-                    </p>
                   </div>
                 </div>
 
                 {/* Title */}
                 <div>
-                  <label
-                    className="mb-1.5 text-sm font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Title (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="E.g., Special Deals Today!"
-                    value={form.title}
-                    onChange={(e) => handleFormChange('title', e.target.value)}
-                  />
+                  <label className="mb-1.5 text-xs font-semibold uppercase tracking-widest text-gray-500">Title</label>
+                  <input type="text" className="w-full rounded-xl border-none px-4 py-2.5 text-sm text-white outline-none placeholder:text-gray-600" style={{ ...glassStyle }} placeholder="Banner title" value={form.title} onChange={e => handleFormChange('title', e.target.value)} />
                 </div>
 
                 {/* Subtitle */}
                 <div>
-                  <label
-                    className="mb-1.5 text-sm font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Subtitle (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="E.g., Get 30% OFF on all pizzas"
-                    value={form.subtitle}
-                    onChange={(e) =>
-                      handleFormChange('subtitle', e.target.value)
-                    }
-                  />
+                  <label className="mb-1.5 text-xs font-semibold uppercase tracking-widest text-gray-500">Subtitle</label>
+                  <input type="text" className="w-full rounded-xl border-none px-4 py-2.5 text-sm text-white outline-none placeholder:text-gray-600" style={{ ...glassStyle }} placeholder="Banner subtitle" value={form.subtitle} onChange={e => handleFormChange('subtitle', e.target.value)} />
                 </div>
 
                 {/* Link URL */}
                 <div>
-                  <label
-                    className="mb-1.5 text-sm font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Link URL (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="E.g., /checkout or https://..."
-                    value={form.link_url}
-                    onChange={(e) =>
-                      handleFormChange('link_url', e.target.value)
-                    }
-                  />
+                  <label className="mb-1.5 text-xs font-semibold uppercase tracking-widest text-gray-500">Link URL</label>
+                  <input type="text" className="w-full rounded-xl border-none px-4 py-2.5 text-sm text-white outline-none placeholder:text-gray-600" style={{ ...glassStyle }} placeholder="/checkout or https://..." value={form.link_url} onChange={e => handleFormChange('link_url', e.target.value)} />
                 </div>
 
-                {/* Active Toggle */}
+                {/* Display Order */}
+                <div>
+                  <label className="mb-1.5 text-xs font-semibold uppercase tracking-widest text-gray-500">Display Order</label>
+                  <input type="number" className="w-full rounded-xl border-none px-4 py-2.5 text-sm text-white outline-none placeholder:text-gray-600" style={{ ...glassStyle }} placeholder="1" value={form.display_order} onChange={e => handleFormChange('display_order', Number(e.target.value))} />
+                </div>
+
+                {/* Active */}
                 <label className="flex cursor-pointer items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={form.is_active}
-                    onChange={(e) =>
-                      handleFormChange('is_active', e.target.checked)
-                    }
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 accent-primary-600"
-                  />
-                  <span
-                    className="text-sm font-medium"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    ✅ Active (visible on home page)
-                  </span>
+                  <input type="checkbox" checked={form.is_active} onChange={e => handleFormChange('is_active', e.target.checked)} className="h-4 w-4 rounded accent-red-600" />
+                  <span className="text-xs font-medium text-gray-400">✅ Active (visible on website)</span>
                 </label>
 
                 {/* Buttons */}
                 <div className="flex gap-3 pt-2">
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="btn-ghost flex-1 rounded-xl border py-3"
-                    style={{ borderColor: 'var(--border-color)' }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="btn-primary flex flex-1 items-center justify-center gap-2 rounded-xl py-3 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSaving ? (
-                      <>
-                        <div className="spinner h-5 w-5" />
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      <span>{isEditing ? 'Update Banner' : 'Add Banner'}</span>
-                    )}
+                  <button onClick={() => setIsModalOpen(false)} className="flex-1 rounded-xl py-3 text-sm font-semibold text-gray-400 transition-all hover:bg-white/5" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>Cancel</button>
+                  <button onClick={handleSave} disabled={isSaving} className="flex flex-1 items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#E8002D' }}>
+                    {isSaving ? <><div className="spinner h-4 w-4" style={{ borderColor: '#fff', borderTopColor: 'transparent' }} /> Saving...</> : isEditing ? 'Update Banner' : 'Save Banner'}
                   </button>
                 </div>
               </div>

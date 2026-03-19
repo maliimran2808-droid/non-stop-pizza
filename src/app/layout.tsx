@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Raleway, Poppins } from "next/font/google";
+import { Geist, Geist_Mono, Raleway, Poppins, DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/components/ThemeProvider";
 import LoadingScreen from "@/components/LoadingScreen";
@@ -34,10 +34,20 @@ const ralewayLight = Raleway({
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["400"],
+ weight: ["300", "400", "500", "600", "700"]
 });
 
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 export const metadata: Metadata = {
   title: "NonStop Pizza | Best Pizza Delivery",
   description:
@@ -52,8 +62,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="light" suppressHydrationWarning>
-   <body
-  className={`${geistSans.variable} ${geistMono.variable} ${raleway.variable} ${poppins.variable} ${ralewayLight.variable} antialiased`}
+<body
+  className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${raleway.variable} ${dmSans.variable} ${jetBrainsMono.variable} antialiased`}
 >
         <ThemeProvider>
           <LoadingScreen />

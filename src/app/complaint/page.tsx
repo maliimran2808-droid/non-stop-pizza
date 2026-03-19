@@ -163,7 +163,7 @@ const ComplaintPage = () => {
               onClick={() => router.push('/')}
               className="btn-primary rounded-xl px-8"
             >
-              Back to Menu
+              Back to Menu 🍕
             </button>
           </div>
         </div>
