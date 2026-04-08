@@ -52,22 +52,22 @@ const LoadingScreen = () => {
       <div className="loading-logo relative z-10 flex flex-col items-center gap-4">
         {/* Pizza Logo SVG */}
         <div className="flex h-auto w-32 items-center justify-center">
-        <img src= '/logo2.webp'/>
+          <img src='/logo2.webp' />
         </div>
-
+        hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
         {/* Restaurant Name */}
-        <div className="text-center" style={{fontFamily:'Poppins'}}>
-       <div className="flex items-center gap-2">
-          <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '0ms' }} />
-          <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '150ms' }} />
-          <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '300ms' }} />
-        </div>
-       
-          
+        <div className="text-center" style={{ fontFamily: 'Poppins' }}>
+          <div className="flex items-center gap-2">
+            <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '0ms' }} />
+            <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '150ms' }} />
+            <div className="h-2.5 w-2.5 animate-bounce rounded-full bg-primary-500" style={{ animationDelay: '300ms' }} />
+          </div>
+
+
         </div>
 
         {/* Loading Dots */}
-        
+
       </div>
     </div>
   );
