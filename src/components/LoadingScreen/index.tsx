@@ -54,7 +54,7 @@ const LoadingScreen = () => {
         <div className="flex h-auto w-32 items-center justify-center">
           <img src='/logo2.webp' />
         </div>
-        hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+
         {/* Restaurant Name */}
         <div className="text-center" style={{ fontFamily: 'Poppins' }}>
           <div className="flex items-center gap-2">
